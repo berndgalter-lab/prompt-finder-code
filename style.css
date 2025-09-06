@@ -1,3 +1,12 @@
+/*
+Theme Name: Prompt Finder
+Description: A WordPress theme for Prompt Finder workflows and content management
+Version: 1.0.0
+Author: Prompt Finder Team
+Template: generatepress
+Text Domain: prompt-finder
+*/
+
 /* ============================================================
    Prompt Finder – Global Design Tokens
    Centralized design system for consistent styling across all components
@@ -18,85 +27,82 @@
   /* ============================================================
      Surfaces & Backgrounds (Dark Mode Default)
      ============================================================ */
-  --pf-bg: #0b0c10;
-  --pf-bg-soft: #111217;
-  --pf-surface-soft: #0e1015;
-  --pf-card: #0f1116;
-  --pf-border: #1f2430;
-  --pf-border-light: #2a2f3a;
+  --pf-bg-primary: #0a0a0a;
+  --pf-bg-secondary: #1a1a1a;
+  --pf-bg-tertiary: #2a2a2a;
+  --pf-bg-elevated: #1e1e1e;
+  --pf-bg-overlay: rgba(0, 0, 0, 0.8);
 
   /* ============================================================
-     Typography
+     Text Colors
      ============================================================ */
-  --pf-text: #e9ecf1;
-  --pf-text-dim: #b8c0cc;
-  --pf-text-muted: #8b95a1;
-  --pf-text-inverse: #0b0c10;
+  --pf-text-primary: #ffffff;
+  --pf-text-secondary: #a0a0a0;
+  --pf-text-tertiary: #666666;
+  --pf-text-inverse: #000000;
 
   /* ============================================================
-     Brand Colors (Creative Purple Theme)
+     Accent Colors
      ============================================================ */
-  --pf-accent: #8b5cf6;
-  --pf-accent-secondary: #c084fc;
-  --pf-accent-hover: #7c3aed;
-  --pf-accent-light: #e9d5ff;
-  --pf-accent-dark: #6d28d9;
-  
-  /* Legacy alias for backward compatibility */
-  --pf-accent-2: var(--pf-accent-secondary);
-
-  /* ============================================================
-     Status & Feedback Colors
-     ============================================================ */
-  --pf-success: #22c55e;
-  --pf-success-light: #dcfce7;
-  --pf-success-dark: #16a34a;
-  
-  --pf-error: #ef4444;
-  --pf-error-light: #fef2f2;
-  --pf-error-dark: #dc2626;
-  
-  --pf-warning: #facc15;
-  --pf-warning-light: #fefce8;
-  --pf-warning-dark: #eab308;
-  
-  --pf-info: #3b82f6;
-  --pf-info-light: #dbeafe;
-  --pf-info-dark: #2563eb;
+  --pf-accent-primary: #3b82f6;
+  --pf-accent-secondary: #8b5cf6;
+  --pf-accent-success: #10b981;
+  --pf-accent-warning: #f59e0b;
+  --pf-accent-error: #ef4444;
+  --pf-accent-info: #06b6d4;
 
   /* ============================================================
      Interactive States
      ============================================================ */
-  --pf-hover-overlay: rgba(139, 92, 246, 0.1);
-  --pf-active-overlay: rgba(139, 92, 246, 0.2);
-  --pf-focus-ring: 0 0 0 3px rgba(139, 92, 246, 0.3);
-  
-  /* ============================================================
-     Shadows & Effects
-     ============================================================ */
-  --pf-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --pf-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --pf-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --pf-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  
-  /* ============================================================
-     Transitions & Animations
-     ============================================================ */
-  --pf-transition-fast: 150ms ease-in-out;
-  --pf-transition-normal: 250ms ease-in-out;
-  --pf-transition-slow: 350ms ease-in-out;
-}
+  --pf-hover-bg: rgba(255, 255, 255, 0.05);
+  --pf-active-bg: rgba(255, 255, 255, 0.1);
+  --pf-focus-ring: 0 0 0 2px var(--pf-accent-primary);
+  --pf-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --pf-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --pf-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
 
-/* ============================================================
-   Global Base Styles
-   ============================================================ */
-body {
-  background: #0a0b0f;
-  color: var(--pf-text);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* ============================================================
+     Typography
+     ============================================================ */
+  --pf-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --pf-font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  --pf-font-size-xs: 0.75rem;
+  --pf-font-size-sm: 0.875rem;
+  --pf-font-size-base: 1rem;
+  --pf-font-size-lg: 1.125rem;
+  --pf-font-size-xl: 1.25rem;
+  --pf-font-size-2xl: 1.5rem;
+  --pf-font-size-3xl: 1.875rem;
+  --pf-font-size-4xl: 2.25rem;
+
+  /* ============================================================
+     Border & Divider
+     ============================================================ */
+  --pf-border-color: #333333;
+  --pf-border-width: 1px;
+  --pf-divider-color: #2a2a2a;
+
+  /* ============================================================
+     Animation & Transitions
+     ============================================================ */
+  --pf-transition-fast: 150ms ease;
+  --pf-transition-base: 250ms ease;
+  --pf-transition-slow: 350ms ease;
+  --pf-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --pf-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --pf-ease-in: cubic-bezier(0.4, 0, 1, 1);
+
+  /* ============================================================
+     Z-Index Scale
+     ============================================================ */
+  --pf-z-dropdown: 1000;
+  --pf-z-sticky: 1020;
+  --pf-z-fixed: 1030;
+  --pf-z-modal-backdrop: 1040;
+  --pf-z-modal: 1050;
+  --pf-z-popover: 1060;
+  --pf-z-tooltip: 1070;
+  --pf-z-toast: 1080;
 }
 
 /* ============================================================
@@ -104,69 +110,57 @@ body {
    ============================================================ */
 @media (prefers-color-scheme: light) {
   :root {
-    /* Surfaces & Backgrounds */
-    --pf-bg: #f7f9fc;
-    --pf-bg-soft: #ffffff;
-    --pf-surface-soft: #fafafa;
-    --pf-card: #ffffff;
-    --pf-border: #e5e7eb;
-    --pf-border-light: #d1d5db;
-
-    /* Typography */
-    --pf-text: #1e1b4b;
-    --pf-text-dim: #6b7280;
-    --pf-text-muted: #9ca3af;
+    --pf-bg-primary: #ffffff;
+    --pf-bg-secondary: #f8f9fa;
+    --pf-bg-tertiary: #e9ecef;
+    --pf-bg-elevated: #ffffff;
+    --pf-bg-overlay: rgba(255, 255, 255, 0.8);
+    
+    --pf-text-primary: #000000;
+    --pf-text-secondary: #6c757d;
+    --pf-text-tertiary: #adb5bd;
     --pf-text-inverse: #ffffff;
-
-    /* Brand Colors (adjusted for light backgrounds) */
-    --pf-accent: #8b5cf6;
-    --pf-accent-secondary: #c084fc;
-    --pf-accent-hover: #7c3aed;
-    --pf-accent-light: #f3e8ff;
-    --pf-accent-dark: #6d28d9;
-
-    /* Interactive States */
-    --pf-hover-overlay: rgba(139, 92, 246, 0.05);
-    --pf-active-overlay: rgba(139, 92, 246, 0.1);
-    --pf-focus-ring: 0 0 0 3px rgba(139, 92, 246, 0.2);
-
-    /* Shadows (adjusted for light mode) */
-    --pf-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --pf-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --pf-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    --pf-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    
+    --pf-hover-bg: rgba(0, 0, 0, 0.05);
+    --pf-active-bg: rgba(0, 0, 0, 0.1);
+    --pf-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --pf-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+    --pf-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.05);
+    
+    --pf-border-color: #dee2e6;
+    --pf-divider-color: #e9ecef;
   }
+}
 
-  body {
-    background: #ffffff;
-  }
+/* ============================================================
+   Base Styles
+   ============================================================ */
+body {
+  font-family: var(--pf-font-family);
+  background-color: var(--pf-bg-primary);
+  color: var(--pf-text-primary);
+  line-height: 1.6;
 }
 
 /* ============================================================
    Utility Classes
    ============================================================ */
-.pf-sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+.pf-container {
+  max-width: var(--pf-wrap);
+  margin: 0 auto;
+  padding: 0 var(--pf-space-sm);
 }
 
-.pf-focus-visible:focus-visible {
-  outline: 2px solid var(--pf-accent);
-  outline-offset: 2px;
-}
+.pf-text-center { text-align: center; }
+.pf-text-left { text-align: left; }
+.pf-text-right { text-align: right; }
 
-/* ============================================================
-   Responsive Breakpoints (for reference)
-   ============================================================ */
-/*
-  Mobile: < 768px
-  Tablet: 768px - 1024px
-  Desktop: > 1024px
-*/
+.pf-mb-0 { margin-bottom: 0; }
+.pf-mb-1 { margin-bottom: var(--pf-space-sm); }
+.pf-mb-2 { margin-bottom: var(--pf-space-md); }
+.pf-mb-3 { margin-bottom: var(--pf-space-lg); }
+
+.pf-mt-0 { margin-top: 0; }
+.pf-mt-1 { margin-top: var(--pf-space-sm); }
+.pf-mt-2 { margin-top: var(--pf-space-md); }
+.pf-mt-3 { margin-top: var(--pf-space-lg); }

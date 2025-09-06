@@ -1,0 +1,1013 @@
+[
+    {
+        "key": "group_68a082f7ac4d6",
+        "title": "Workflow Definition",
+        "fields": [
+            {
+                "key": "field_68ac52ca018d6",
+                "label": "General",
+                "name": "",
+                "aria-label": "",
+                "type": "tab",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "placement": "top",
+                "endpoint": 0,
+                "selected": 0
+            },
+            {
+                "key": "field_68a082f72d122",
+                "label": "Summary",
+                "name": "Summary",
+                "aria-label": "",
+                "type": "textarea",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "maxlength": "",
+                "allow_in_bindings": 0,
+                "rows": "",
+                "placeholder": "",
+                "new_lines": ""
+            },
+            {
+                "key": "field_68a0838c2d124",
+                "label": "Use Case",
+                "name": "use_case",
+                "aria-label": "",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "maxlength": "",
+                "allow_in_bindings": 0,
+                "placeholder": "",
+                "prepend": "",
+                "append": ""
+            },
+            {
+                "key": "field_68a083482d123",
+                "label": "Version",
+                "name": "Version",
+                "aria-label": "",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "v1.0",
+                "maxlength": "",
+                "allow_in_bindings": 0,
+                "placeholder": "",
+                "prepend": "",
+                "append": ""
+            },
+            {
+                "key": "field_pf_auto_update_allowed",
+                "label": "Auto Update Allowed",
+                "name": "auto_update_allowed",
+                "aria-label": "",
+                "type": "true_false",
+                "instructions": "If enabled, users without a pin can be auto-upgraded to the next stable version.",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "message": "",
+                "default_value": 0,
+                "allow_in_bindings": 0,
+                "ui": 1,
+                "ui_on_text": "Auto",
+                "ui_off_text": "Manual"
+            },
+            {
+                "key": "field_pf_stable_version",
+                "label": "Stable Version",
+                "name": "stable_version",
+                "aria-label": "",
+                "type": "true_false",
+                "instructions": "Marks this workflow as the currently published stable variant.",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "message": "",
+                "default_value": 1,
+                "allow_in_bindings": 0,
+                "ui": 1,
+                "ui_on_text": "Stable",
+                "ui_off_text": "Not Stable"
+            },
+            {
+                "key": "field_pf_changelog",
+                "label": "Changelog",
+                "name": "changelog",
+                "aria-label": "",
+                "type": "textarea",
+                "instructions": "Description of changes in this version.",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "maxlength": "",
+                "allow_in_bindings": 0,
+                "rows": 4,
+                "placeholder": "Describe what changed in this version...",
+                "new_lines": ""
+            },
+            {
+                "key": "field_68a084842d125",
+                "label": "Lastest Update",
+                "name": "lastest_update",
+                "aria-label": "",
+                "type": "date_picker",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "display_format": "Y/m/d/",
+                "return_format": "d/m/Y",
+                "first_day": 1,
+                "default_to_current_date": 0,
+                "allow_in_bindings": 0
+            },
+            {
+                "key": "field_68ac555bb04ab",
+                "label": "Value",
+                "name": "",
+                "aria-label": "",
+                "type": "tab",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "placement": "top",
+                "endpoint": 0,
+                "selected": 0
+            },
+            {
+                "key": "field_68ac5571b04ac",
+                "label": "Pain Points",
+                "name": "pain_point",
+                "aria-label": "",
+                "type": "textarea",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "maxlength": "",
+                "allow_in_bindings": 0,
+                "rows": "",
+                "placeholder": "",
+                "new_lines": ""
+            },
+            {
+                "key": "field_68ac559cb04ad",
+                "label": "Expected Outcome",
+                "name": "expected_outcome",
+                "aria-label": "",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "maxlength": "",
+                "allow_in_bindings": 0,
+                "placeholder": "",
+                "prepend": "",
+                "append": ""
+            },
+            {
+                "key": "field_68ac55c5b04ae",
+                "label": "Time Saved Min",
+                "name": "time_saved_min",
+                "aria-label": "",
+                "type": "number",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "min": "",
+                "max": "",
+                "allow_in_bindings": 0,
+                "placeholder": "",
+                "step": "",
+                "prepend": "",
+                "append": ""
+            },
+            {
+                "key": "field_68ac55ecb04af",
+                "label": "Difficulty Without AI",
+                "name": "difficulty_without_ai",
+                "aria-label": "",
+                "type": "select",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "1": "Very Low",
+                    "2": "Low",
+                    "3": "Medium",
+                    "4": "High",
+                    "5": "Very High"
+                },
+                "default_value": 3,
+                "return_format": "value",
+                "multiple": 0,
+                "allow_null": 0,
+                "allow_in_bindings": 0,
+                "ui": 0,
+                "ajax": 0,
+                "placeholder": "",
+                "create_options": 0,
+                "save_options": 0
+            },
+            {
+                "key": "field_68ac56b2b04b0",
+                "label": "Access",
+                "name": "",
+                "aria-label": "",
+                "type": "tab",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "placement": "top",
+                "endpoint": 0,
+                "selected": 0
+            },
+            {
+                "key": "field_68ac5715b04b1",
+                "label": "Access Mode",
+                "name": "access_mode",
+                "aria-label": "",
+                "type": "select",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "free": "Free (all steps visible)",
+                    "half_locked": "Half-Locked (some steps free, rest locked)",
+                    "pro": "Pro (all steps locked)"
+                },
+                "default_value": "free",
+                "return_format": "value",
+                "multiple": 0,
+                "allow_null": 0,
+                "allow_in_bindings": 0,
+                "ui": 0,
+                "ajax": 0,
+                "placeholder": "",
+                "create_options": 0,
+                "save_options": 0
+            },
+            {
+                "key": "field_68ac5871b04b2",
+                "label": "Free Step Limit",
+                "name": "free_step_limit",
+                "aria-label": "",
+                "type": "number",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": 1,
+                "min": "",
+                "max": "",
+                "allow_in_bindings": 0,
+                "placeholder": "",
+                "step": "",
+                "prepend": "",
+                "append": ""
+            },
+            {
+                "key": "field_68ac599fb04b4",
+                "label": "Login Required",
+                "name": "login_required",
+                "aria-label": "",
+                "type": "true_false",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "message": "Require login to view full workflow",
+                "default_value": 0,
+                "allow_in_bindings": 0,
+                "ui": 0,
+                "ui_on_text": "",
+                "ui_off_text": ""
+            },
+            {
+                "key": "field_68ac5e05b04b5",
+                "label": "Status",
+                "name": "status",
+                "aria-label": "",
+                "type": "select",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "draft": "Draft",
+                    "pending": "Pending",
+                    "approved": "Approved",
+                    "archived": "Archived"
+                },
+                "default_value": "approved",
+                "return_format": "value",
+                "multiple": 0,
+                "allow_null": 0,
+                "allow_in_bindings": 0,
+                "ui": 0,
+                "ajax": 0,
+                "placeholder": "",
+                "create_options": 0,
+                "save_options": 0
+            },
+            {
+                "key": "field_68ac5892b04b3",
+                "label": "Access Tier",
+                "name": "access_tier",
+                "aria-label": "",
+                "type": "select",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "free": "Free",
+                    "pro": "Pro",
+                    "team": "Team",
+                    "enterprise": "Enterprise"
+                },
+                "default_value": "free",
+                "return_format": "value",
+                "multiple": 0,
+                "allow_null": 0,
+                "allow_in_bindings": 0,
+                "ui": 0,
+                "ajax": 0,
+                "placeholder": "",
+                "create_options": 0,
+                "save_options": 0
+            },
+            {
+                "key": "field_68ac5e99b04b6",
+                "label": "License",
+                "name": "license",
+                "aria-label": "",
+                "type": "select",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "pf-proprietary": "Prompt Finder Proprietary",
+                    "creator-licensed": "Creator Licensed",
+                    "pf-free": "Prompt Finder Free License"
+                },
+                "default_value": "pf-proprietary",
+                "return_format": "value",
+                "multiple": 0,
+                "allow_null": 0,
+                "allow_in_bindings": 0,
+                "ui": 0,
+                "ajax": 0,
+                "placeholder": "",
+                "create_options": 0,
+                "save_options": 0
+            },
+            {
+                "key": "field_68ad262f303b9",
+                "label": "Owner",
+                "name": "owner",
+                "aria-label": "",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "Prompt Finder",
+                "maxlength": "",
+                "allow_in_bindings": 0,
+                "placeholder": "",
+                "prepend": "",
+                "append": ""
+            },
+            {
+                "key": "field_68ac54be4046b",
+                "label": "Steps",
+                "name": "",
+                "aria-label": "",
+                "type": "tab",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "placement": "top",
+                "endpoint": 0,
+                "selected": 0
+            },
+            {
+                "key": "field_68a084c92d126",
+                "label": "Steps",
+                "name": "steps",
+                "aria-label": "",
+                "type": "repeater",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "layout": "row",
+                "pagination": 0,
+                "min": 0,
+                "max": 0,
+                "collapsed": "field_68a085ba2d128",
+                "button_label": "Add Row",
+                "rows_per_page": 20,
+                "sub_fields": [
+                    {
+                        "key": "field_68a085502d127",
+                        "label": "Step ID",
+                        "name": "step_id_",
+                        "aria-label": "",
+                        "type": "text",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "maxlength": "",
+                        "allow_in_bindings": 0,
+                        "placeholder": "",
+                        "prepend": "",
+                        "append": "",
+                        "parent_repeater": "field_68a084c92d126"
+                    },
+                    {
+                        "key": "field_68a085ba2d128",
+                        "label": "Title",
+                        "name": "title",
+                        "aria-label": "",
+                        "type": "text",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "maxlength": "",
+                        "allow_in_bindings": 0,
+                        "placeholder": "",
+                        "prepend": "",
+                        "append": "",
+                        "parent_repeater": "field_68a084c92d126"
+                    },
+                    {
+                        "key": "field_68a086502d129",
+                        "label": "Objective",
+                        "name": "objective",
+                        "aria-label": "",
+                        "type": "textarea",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "maxlength": "",
+                        "allow_in_bindings": 0,
+                        "rows": "",
+                        "placeholder": "",
+                        "new_lines": "",
+                        "parent_repeater": "field_68a084c92d126"
+                    },
+                    {
+                        "key": "field_68a0867f2d12a",
+                        "label": "Prompt",
+                        "name": "prompt",
+                        "aria-label": "",
+                        "type": "textarea",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "maxlength": "",
+                        "allow_in_bindings": 0,
+                        "rows": "",
+                        "placeholder": "",
+                        "new_lines": "",
+                        "parent_repeater": "field_68a084c92d126"
+                    },
+                    {
+                        "key": "field_68a086922d12b",
+                        "label": "Variables",
+                        "name": "variables",
+                        "aria-label": "",
+                        "type": "repeater",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "layout": "table",
+                        "pagination": 0,
+                        "min": 0,
+                        "max": 0,
+                        "collapsed": "",
+                        "button_label": "Add Row",
+                        "rows_per_page": 20,
+                        "sub_fields": [
+                            {
+                                "key": "field_68a087d32d12c",
+                                "label": "var_name",
+                                "name": "var_name",
+                                "aria-label": "",
+                                "type": "text",
+                                "instructions": "",
+                                "required": 0,
+                                "conditional_logic": 0,
+                                "wrapper": {
+                                    "width": "",
+                                    "class": "",
+                                    "id": ""
+                                },
+                                "default_value": "",
+                                "maxlength": "",
+                                "allow_in_bindings": 0,
+                                "placeholder": "",
+                                "prepend": "",
+                                "append": "",
+                                "parent_repeater": "field_68a086922d12b"
+                            },
+                            {
+                                "key": "field_68a087e92d12d",
+                                "label": "var_description",
+                                "name": "var_description",
+                                "aria-label": "",
+                                "type": "textarea",
+                                "instructions": "",
+                                "required": 0,
+                                "conditional_logic": 0,
+                                "wrapper": {
+                                    "width": "",
+                                    "class": "",
+                                    "id": ""
+                                },
+                                "default_value": "",
+                                "maxlength": "",
+                                "allow_in_bindings": 0,
+                                "rows": "",
+                                "placeholder": "",
+                                "new_lines": "",
+                                "parent_repeater": "field_68a086922d12b"
+                            }
+                        ],
+                        "parent_repeater": "field_68a084c92d126"
+                    },
+                    {
+                        "key": "field_68a089582d12e",
+                        "label": "Example Output",
+                        "name": "example_output",
+                        "aria-label": "",
+                        "type": "textarea",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "maxlength": "",
+                        "allow_in_bindings": 0,
+                        "rows": "",
+                        "placeholder": "",
+                        "new_lines": "",
+                        "parent_repeater": "field_68a084c92d126"
+                    },
+                    {
+                        "key": "field_68a0896f2d12f",
+                        "label": "Checklist",
+                        "name": "checklist",
+                        "aria-label": "",
+                        "type": "repeater",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "layout": "table",
+                        "min": 0,
+                        "max": 0,
+                        "collapsed": "",
+                        "button_label": "Add Row",
+                        "rows_per_page": 20,
+                        "sub_fields": [
+                            {
+                                "key": "field_68a089bdc06b8",
+                                "label": "check_item",
+                                "name": "check_item",
+                                "aria-label": "",
+                                "type": "text",
+                                "instructions": "",
+                                "required": 0,
+                                "conditional_logic": 0,
+                                "wrapper": {
+                                    "width": "",
+                                    "class": "",
+                                    "id": ""
+                                },
+                                "default_value": "",
+                                "maxlength": "",
+                                "allow_in_bindings": 0,
+                                "placeholder": "",
+                                "prepend": "",
+                                "append": "",
+                                "parent_repeater": "field_68a0896f2d12f"
+                            }
+                        ],
+                        "parent_repeater": "field_68a084c92d126"
+                    },
+                    {
+                        "key": "field_pf_checkpoint_required",
+                        "label": "Checkpoint Required",
+                        "name": "checkpoint_required",
+                        "aria-label": "",
+                        "type": "true_false",
+                        "instructions": "Pause here until the user confirms/chooses an option before continuing.",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "message": "",
+                        "default_value": 0,
+                        "allow_in_bindings": 0,
+                        "ui": 1,
+                        "ui_on_text": "Required",
+                        "ui_off_text": "Not Required",
+                        "parent_repeater": "field_68a084c92d126"
+                    },
+                    {
+                        "key": "field_pf_checkpoint_message",
+                        "label": "Checkpoint Message",
+                        "name": "checkpoint_message",
+                        "aria-label": "",
+                        "type": "textarea",
+                        "instructions": "Tell the user exactly what to review/choose before continuing.",
+                        "required": 0,
+                        "conditional_logic": [
+                            [
+                                {
+                                    "field": "field_pf_checkpoint_required",
+                                    "operator": "==",
+                                    "value": "1"
+                                }
+                            ]
+                        ],
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "maxlength": "",
+                        "allow_in_bindings": 0,
+                        "rows": "",
+                        "placeholder": "E.g., 'Review the generated hooks and select one to continue.'",
+                        "new_lines": "",
+                        "parent_repeater": "field_68a084c92d126"
+                    },
+                    {
+                        "key": "field_pf_selection_key",
+                        "label": "Selection Key",
+                        "name": "selection_key",
+                        "aria-label": "",
+                        "type": "text",
+                        "instructions": "Name of the variable to hold the user's chosen option (used by the next step).",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "SELECTED_ITEM",
+                        "maxlength": "",
+                        "allow_in_bindings": 0,
+                        "placeholder": "",
+                        "prepend": "",
+                        "append": "",
+                        "parent_repeater": "field_68a084c92d126"
+                    },
+                    {
+                        "key": "field_pf_context_requirements",
+                        "label": "Context Requirements",
+                        "name": "context_requirements",
+                        "aria-label": "",
+                        "type": "repeater",
+                        "instructions": "Declare which context the step needs. Keeps schema flexible without many booleans.",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "layout": "table",
+                        "pagination": 0,
+                        "min": 0,
+                        "max": 0,
+                        "collapsed": "",
+                        "button_label": "Add Context",
+                        "rows_per_page": 20,
+                        "sub_fields": [
+                            {
+                                "key": "field_pf_ctx_type",
+                                "label": "Context Type",
+                                "name": "context_type",
+                                "aria-label": "",
+                                "type": "select",
+                                "instructions": "What kind of context is required?",
+                                "required": 1,
+                                "conditional_logic": 0,
+                                "wrapper": {
+                                    "width": "",
+                                    "class": "",
+                                    "id": ""
+                                },
+                                "choices": {
+                                    "business": "Business",
+                                    "icp": "ICP / Target Audience",
+                                    "tone": "Tone of Voice",
+                                    "industry": "Industry",
+                                    "examples": "Reference Examples",
+                                    "persona": "Persona",
+                                    "constraints": "Constraints/Rules",
+                                    "external": "External Data (URLs/APIs)"
+                                },
+                                "default_value": "business",
+                                "return_format": "value",
+                                "multiple": 0,
+                                "allow_null": 0,
+                                "allow_in_bindings": 0,
+                                "ui": 1,
+                                "ajax": 0,
+                                "placeholder": "",
+                                "create_options": 0,
+                                "save_options": 0,
+                                "parent_repeater": "field_pf_context_requirements"
+                            },
+                            {
+                                "key": "field_pf_ctx_required",
+                                "label": "Required?",
+                                "name": "required",
+                                "aria-label": "",
+                                "type": "true_false",
+                                "instructions": "If required and missing, UI will pause here (Checkpoint) to collect it.",
+                                "required": 0,
+                                "conditional_logic": 0,
+                                "wrapper": {
+                                    "width": "",
+                                    "class": "",
+                                    "id": ""
+                                },
+                                "message": "",
+                                "default_value": 1,
+                                "allow_in_bindings": 0,
+                                "ui": 1,
+                                "ui_on_text": "Yes",
+                                "ui_off_text": "No",
+                                "parent_repeater": "field_pf_context_requirements"
+                            },
+                            {
+                                "key": "field_pf_ctx_source",
+                                "label": "Source",
+                                "name": "source",
+                                "aria-label": "",
+                                "type": "select",
+                                "instructions": "Where to fetch it from by default.",
+                                "required": 0,
+                                "conditional_logic": 0,
+                                "wrapper": {
+                                    "width": "",
+                                    "class": "",
+                                    "id": ""
+                                },
+                                "choices": {
+                                    "user_profile": "User/Company Profile (ACF)",
+                                    "run_input": "Run-Time Input",
+                                    "previous_step": "Previous Step Output",
+                                    "options_page": "Global Options",
+                                    "external": "External (URL/API)"
+                                },
+                                "default_value": "user_profile",
+                                "return_format": "value",
+                                "multiple": 0,
+                                "allow_null": 0,
+                                "allow_in_bindings": 0,
+                                "ui": 1,
+                                "ajax": 0,
+                                "placeholder": "",
+                                "create_options": 0,
+                                "save_options": 0,
+                                "parent_repeater": "field_pf_context_requirements"
+                            },
+                            {
+                                "key": "field_pf_ctx_default",
+                                "label": "Default Value (JSON/Text)",
+                                "name": "default_value",
+                                "aria-label": "",
+                                "type": "textarea",
+                                "instructions": "Optional default; JSON or plain text. Used when source empty and required=false.",
+                                "required": 0,
+                                "conditional_logic": 0,
+                                "wrapper": {
+                                    "width": "",
+                                    "class": "",
+                                    "id": ""
+                                },
+                                "default_value": "",
+                                "maxlength": "",
+                                "allow_in_bindings": 0,
+                                "rows": "",
+                                "placeholder": "",
+                                "new_lines": "",
+                                "parent_repeater": "field_pf_context_requirements"
+                            }
+                        ],
+                        "parent_repeater": "field_68a084c92d126"
+                    },
+                    {
+                        "key": "field_68a089d6c06b9",
+                        "label": "Estimated Time (Min)",
+                        "name": "estimated_time_min",
+                        "aria-label": "",
+                        "type": "number",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "min": "",
+                        "max": "",
+                        "allow_in_bindings": 0,
+                        "placeholder": "",
+                        "step": "",
+                        "prepend": "",
+                        "append": "",
+                        "parent_repeater": "field_68a084c92d126"
+                    }
+                ]
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "post_type",
+                    "operator": "==",
+                    "value": "workflows"
+                }
+            ]
+        ],
+        "menu_order": 0,
+        "position": "normal",
+        "style": "default",
+        "label_placement": "top",
+        "instruction_placement": "label",
+        "hide_on_screen": "",
+        "active": true,
+        "description": "",
+        "show_in_rest": 0
+    }
+]

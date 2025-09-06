@@ -686,6 +686,80 @@ function initFillExamples() {
     }
   }
 
+  // ------------------------------
+  // Checkpoint Management
+  // ------------------------------
+
+  /**
+   * Initialize checkpoint functionality
+   */
+  function initCheckpoints() {
+    try {
+      on(document, 'click', (e) => {
+        const btn = e.target.closest('[data-action="continue-checkpoint"]');
+        if (!btn) return;
+
+        const checkpoint = btn.closest('[data-checkpoint="true"]');
+        if (!checkpoint) return;
+
+        const step = checkpoint.closest('.pf-step, .pf-step-card');
+        if (!step) return;
+
+        // Hide checkpoint and enable next step
+        checkpoint.style.display = 'none';
+        step.classList.remove('pf-step--checkpoint');
+        
+        // Enable next step if it exists
+        const nextStep = step.nextElementSibling;
+        if (nextStep && nextStep.classList.contains('pf-step')) {
+          nextStep.classList.remove('pf-step--locked');
+          const nextBlur = nextStep.querySelector('.pf-blur');
+          if (nextBlur) {
+            nextBlur.classList.remove('pf-blur');
+          }
+        }
+
+        // Store checkpoint completion
+        const stepId = step.id || 'unknown';
+        localStorage.setItem(CONFIG.STORAGE_PREFIX + 'checkpoint_' + stepId, '1');
+      });
+    } catch (e) {
+      logError('initCheckpoints', e);
+    }
+  }
+
+  /**
+   * Check and restore checkpoint states on page load
+   */
+  function restoreCheckpointStates() {
+    try {
+      $$('.pf-step--checkpoint').forEach(step => {
+        const stepId = step.id || 'unknown';
+        const completed = localStorage.getItem(CONFIG.STORAGE_PREFIX + 'checkpoint_' + stepId) === '1';
+        
+        if (completed) {
+          const checkpoint = step.querySelector('[data-checkpoint="true"]');
+          if (checkpoint) {
+            checkpoint.style.display = 'none';
+          }
+          step.classList.remove('pf-step--checkpoint');
+          
+          // Enable next step
+          const nextStep = step.nextElementSibling;
+          if (nextStep && nextStep.classList.contains('pf-step')) {
+            nextStep.classList.remove('pf-step--locked');
+            const nextBlur = nextStep.querySelector('.pf-blur');
+            if (nextBlur) {
+              nextBlur.classList.remove('pf-blur');
+            }
+          }
+        }
+      });
+    } catch (e) {
+      logError('restoreCheckpointStates', e);
+    }
+  }
+
 
   // ------------------------------
   // Main Initialization
@@ -711,11 +785,13 @@ function initFillExamples() {
       initVariableHints();
       initHowtoPrefs();
       initFocusManagement();
+      initCheckpoints();
 
       // UI enhancements
       initActiveStep();
       initChecklist();
       activateHashOnLoad();
+      restoreCheckpointStates();
 
       // Optional: Smooth-scroll offset per CSS var
       if (typeof BEHAV.smooth_scroll_offset === 'number') {

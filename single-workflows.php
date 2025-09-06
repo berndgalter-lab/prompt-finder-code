@@ -68,6 +68,11 @@ try {
         $has_steps = is_array($steps) && count($steps) > 0;
         $total_steps = $has_steps ? count($steps) : 0;
         
+        // New ACF fields
+        $stable_version = function_exists('get_field') ? get_field('stable_version') : false;
+        $auto_update_allowed = function_exists('get_field') ? get_field('auto_update_allowed') : false;
+        $changelog = function_exists('get_field') ? get_field('changelog') : '';
+        
         // Update usage count from optimized table
         $usage_count = $optimized_workflow['usage_count'] ?? 0;
     } else {
@@ -79,6 +84,12 @@ try {
         $steps = function_exists('get_field') ? get_field('steps') : []; // repeater
         $has_steps = is_array($steps) && count($steps) > 0;
         $total_steps = $has_steps ? count($steps) : 0;
+        
+        // New ACF fields
+        $stable_version = function_exists('get_field') ? get_field('stable_version') : false;
+        $auto_update_allowed = function_exists('get_field') ? get_field('auto_update_allowed') : false;
+        $changelog = function_exists('get_field') ? get_field('changelog') : '';
+        
         $usage_count = 0;
     }
 } catch (Exception $e) {
@@ -90,6 +101,9 @@ try {
     $steps = [];
     $has_steps = false;
     $total_steps = 0;
+    $stable_version = false;
+    $auto_update_allowed = false;
+    $changelog = '';
     $usage_count = 0;
 }
 
@@ -286,7 +300,12 @@ $show_legend = !empty($PF_FLAGS['mode_legend']) || !empty($PF_FLAGS['gating']);
               <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3 5h18v2H3zm0 6h18v2H3zm0 6h18v2H3z"/></svg>
             </span>
             <span class="pf-pill-label"><?php echo esc_html($PF_COPY['pill_version'] ?? 'Version'); ?>:</span>
-            <span class="pf-pill-value"><?php echo esc_html($version); ?></span>
+            <span class="pf-pill-value">
+              <?php echo esc_html($version); ?>
+              <?php if ($stable_version): ?>
+                <span class="pf-badge pf-badge--stable" title="<?php esc_attr_e('Stable version', 'prompt-finder'); ?>">Stable</span>
+              <?php endif; ?>
+            </span>
           </li>
         <?php endif; ?>
 
@@ -327,10 +346,17 @@ $show_legend = !empty($PF_FLAGS['mode_legend']) || !empty($PF_FLAGS['gating']);
         <?php endif; ?>
       </ul>
     <?php endif; ?>
-	  
 
-
-
+    <?php if ($changelog && !empty($PF_FLAGS['show_changelog'])): ?>
+      <details class="pf-changelog pf-tile" style="margin-top: 1rem;">
+        <summary>
+          <strong><?php echo esc_html($PF_COPY['changelog_title'] ?? 'What\'s new in this version'); ?></strong>
+        </summary>
+        <div class="pf-changelog-content">
+          <?php echo nl2br(esc_html($changelog)); ?>
+        </div>
+      </details>
+    <?php endif; ?>
 
     <?php if (!empty($PF_CONFIG['layout']['show_thumbnail']) && has_post_thumbnail()): ?>
       <div class="pf-thumb"><?php the_post_thumbnail('large'); ?></div>
@@ -478,6 +504,12 @@ $show_legend = !empty($PF_FLAGS['mode_legend']) || !empty($PF_FLAGS['gating']);
           $example    = $s['example_output'] ?? '';
           $checklist  = (isset($s['checklist']) && is_array($s['checklist'])) ? $s['checklist'] : [];
           $eta        = isset($s['estimated_time_min']) ? (int)$s['estimated_time_min'] : 0;
+          
+          // New ACF fields
+          $checkpoint_required = !empty($s['checkpoint_required']);
+          $checkpoint_message = $s['checkpoint_message'] ?? '';
+          $selection_key = $s['selection_key'] ?? '';
+          $context_requirements = (isset($s['context_requirements']) && is_array($s['context_requirements'])) ? $s['context_requirements'] : [];
 
           $needs_prev = (stripos(($prompt ?? ''), '{previous_output}') !== false);
           $step_anchor = 'step-'.$idx;
@@ -485,7 +517,7 @@ $show_legend = !empty($PF_FLAGS['mode_legend']) || !empty($PF_FLAGS['gating']);
           // Lock-Entscheidung
           $locked = pf_step_is_locked($idx, $ACCESS_MODE, $USER_PLAN, (int)$FREE_STEP_LIMIT, (bool)$LOGIN_REQUIRED, (bool)$viewer_logged_in);
 
-          $li_classes = 'pf-step pf-step-card' . ($locked ? ' pf-step--locked' : '');
+          $li_classes = 'pf-step pf-step-card' . ($locked ? ' pf-step--locked' : '') . ($checkpoint_required ? ' pf-step--checkpoint' : '');
         ?>
         <li class="<?php echo esc_attr($li_classes); ?>" id="<?php echo esc_attr($step_anchor); ?>">
 
@@ -567,12 +599,19 @@ $show_legend = !empty($PF_FLAGS['mode_legend']) || !empty($PF_FLAGS['gating']);
           <label class="pf-prompt-label" for="<?php echo esc_attr('pf-prompt-'.$idx); ?>">
             <?php echo esc_html($PF_COPY['prompt_label'] ?? __('Prompt', 'prompt-finder')); ?>
           </label>
+          <?php
+            // Inject global context if context requirements exist
+            $enhanced_prompt = $prompt;
+            if (!empty($context_requirements) && function_exists('pf_inject_global_context')) {
+              $enhanced_prompt = pf_inject_global_context($prompt, $context_requirements);
+            }
+          ?>
           <textarea id="<?php echo esc_attr('pf-prompt-'.$idx); ?>"
                     class="pf-prompt"
                     data-prompt-template
-                    data-base="<?php echo esc_attr($prompt); ?>"
+                    data-base="<?php echo esc_attr($enhanced_prompt); ?>"
                     rows="8"
-                    spellcheck="false"><?php echo esc_html($prompt); ?></textarea>
+                    spellcheck="false"><?php echo esc_html($enhanced_prompt); ?></textarea>
 
           <div class="pf-cta">
             <button class="pf-copy" data-action="copy-prompt">
@@ -596,6 +635,37 @@ $show_legend = !empty($PF_FLAGS['mode_legend']) || !empty($PF_FLAGS['gating']);
                   <li><?php echo esc_html($c['check_item'] ?? ''); ?></li>
                 <?php endforeach; ?>
               </ul>
+            </div>
+          <?php endif; ?>
+
+          <?php if (!empty($context_requirements)): ?>
+            <div class="pf-context-requirements">
+              <strong><?php echo esc_html($PF_COPY['context_title'] ?? 'Context Requirements'); ?>:</strong>
+              <?php foreach ($context_requirements as $req): ?>
+                <div class="pf-context-item">
+                  <span class="pf-context-type"><?php echo esc_html(ucfirst($req['context_type'] ?? '')); ?></span>
+                  <span class="<?php echo !empty($req['required']) ? 'pf-context-required' : 'pf-context-optional'; ?>">
+                    <?php echo !empty($req['required']) ? 'Required' : 'Optional'; ?>
+                  </span>
+                  <?php if (!empty($req['source'])): ?>
+                    <span class="pf-context-source">(<?php echo esc_html(ucfirst(str_replace('_', ' ', $req['source']))); ?>)</span>
+                  <?php endif; ?>
+                </div>
+              <?php endforeach; ?>
+            </div>
+          <?php endif; ?>
+
+          <?php if ($checkpoint_required && $checkpoint_message): ?>
+            <div class="pf-checkpoint pf-tile" data-checkpoint="true">
+              <div class="pf-checkpoint-message">
+                <strong><?php echo esc_html($PF_COPY['checkpoint_title'] ?? 'Checkpoint'); ?>:</strong>
+                <p><?php echo nl2br(esc_html($checkpoint_message)); ?></p>
+              </div>
+              <div class="pf-checkpoint-actions">
+                <button class="pf-btn pf-btn--primary" data-action="continue-checkpoint">
+                  <?php echo esc_html($PF_COPY['continue_button'] ?? 'Continue'); ?>
+                </button>
+              </div>
             </div>
           <?php endif; ?>
 

@@ -701,3 +701,196 @@
   outline-offset: 2px; font-weight: 800;
 }
 
+/* ========== Checkpoint Styles ========== */
+.pf-checkpoint {
+  background: var(--pf-card);
+  border: 2px solid var(--pf-accent);
+  border-radius: var(--pf-radius);
+  padding: 20px;
+  margin: 16px 0;
+  position: relative;
+}
+
+.pf-checkpoint::before {
+  content: '⏸️';
+  position: absolute;
+  top: -12px;
+  left: 20px;
+  background: var(--pf-bg);
+  padding: 0 8px;
+  font-size: 1.2rem;
+}
+
+.pf-checkpoint-message {
+  margin-bottom: 16px;
+}
+
+.pf-checkpoint-message strong {
+  color: var(--pf-accent);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.pf-checkpoint-message p {
+  margin: 0;
+  color: var(--pf-text-dim);
+  line-height: 1.5;
+}
+
+.pf-checkpoint-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.pf-step--checkpoint {
+  position: relative;
+}
+
+.pf-step--checkpoint::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(139, 92, 246, 0.05);
+  border-radius: var(--pf-radius);
+  pointer-events: none;
+}
+
+/* ========== Version Badge Styles ========== */
+.pf-badge--stable {
+  background: var(--pf-success);
+  color: var(--pf-success-light);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ========== Changelog Styles ========== */
+.pf-changelog {
+  background: var(--pf-card);
+  border: 1px solid var(--pf-border);
+  border-radius: var(--pf-radius);
+  padding: 16px;
+}
+
+.pf-changelog summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--pf-accent);
+  padding: 8px 0;
+  border-bottom: 1px solid var(--pf-border);
+  margin-bottom: 12px;
+}
+
+.pf-changelog summary:hover {
+  color: var(--pf-accent-hover);
+}
+
+.pf-changelog-content {
+  color: var(--pf-text-dim);
+  line-height: 1.6;
+  padding-top: 8px;
+}
+
+/* ========== Selection Dropdown Styles ========== */
+.pf-selection {
+  background: var(--pf-card);
+  border: 1px solid var(--pf-border);
+  border-radius: var(--pf-radius);
+  padding: 16px;
+  margin: 12px 0;
+}
+
+.pf-selection-label {
+  display: block;
+  font-weight: 600;
+  color: var(--pf-text);
+  margin-bottom: 8px;
+}
+
+.pf-selection-dropdown {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--pf-border);
+  border-radius: 8px;
+  background: var(--pf-bg);
+  color: var(--pf-text);
+  font-size: 1rem;
+  transition: var(--pf-transition-fast);
+}
+
+.pf-selection-dropdown:focus {
+  outline: none;
+  border-color: var(--pf-accent);
+  box-shadow: var(--pf-focus-ring);
+}
+
+.pf-selection-dropdown:hover {
+  border-color: var(--pf-border-light);
+}
+
+/* ========== Context Requirements Styles ========== */
+.pf-context-requirements {
+  background: var(--pf-surface-soft);
+  border: 1px solid var(--pf-border);
+  border-radius: var(--pf-radius);
+  padding: 12px;
+  margin: 8px 0;
+  font-size: 0.9rem;
+}
+
+.pf-context-requirements strong {
+  color: var(--pf-accent);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.pf-context-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+}
+
+.pf-context-type {
+  background: var(--pf-accent-light);
+  color: var(--pf-accent-dark);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.pf-context-required {
+  color: var(--pf-error);
+  font-weight: 600;
+}
+
+.pf-context-optional {
+  color: var(--pf-text-muted);
+}
+
+/* ========== Responsive Adjustments ========== */
+@media (max-width: 768px) {
+  .pf-checkpoint {
+    padding: 16px;
+    margin: 12px 0;
+  }
+  
+  .pf-checkpoint-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .pf-selection {
+    padding: 12px;
+  }
+}
+

@@ -151,6 +151,138 @@ if ( !function_exists( 'chld_thm_cfg_locale_css' ) ):
 endif;
 add_filter( 'locale_stylesheet_uri', 'chld_thm_cfg_locale_css' );
 
+/* =====================================================
+   ACF JSON Sync & Global Context
+===================================================== */
+
+/**
+ * Set ACF JSON save point to theme directory
+ */
+add_filter('acf/settings/save_json', function($path) {
+    return get_stylesheet_directory() . '/acf-json';
+});
+
+/**
+ * Set ACF JSON load point to theme directory
+ */
+add_filter('acf/settings/load_json', function($paths) {
+    $paths[] = get_stylesheet_directory() . '/acf-json';
+    return $paths;
+});
+
+/**
+ * Add Global Context options page
+ */
+if (function_exists('acf_add_options_page')) {
+    acf_add_options_page([
+        'page_title' => 'Global Context',
+        'menu_title' => 'Global Context',
+        'menu_slug'  => 'acf-options-global-context',
+        'capability' => 'manage_options',
+        'icon_url'   => 'dashicons-admin-settings',
+        'position'   => 30,
+    ]);
+}
+
+/**
+ * Get global context data for workflow injection
+ * 
+ * @since 1.0.0
+ * @return array Global context data
+ */
+function pf_get_global_context(): array {
+    static $context = null;
+    
+    if ($context === null) {
+        $context = [
+            'company_name' => get_field('company_name', 'option') ?: '',
+            'industry' => get_field('industry', 'option') ?: '',
+            'tone_of_voice' => get_field('tone_of_voice', 'option') ?: '',
+            'target_audience' => get_field('target_audience', 'option') ?: '',
+            'mission_values' => get_field('mission_values', 'option') ?: '',
+            'reference_examples' => get_field('reference_examples', 'option') ?: [],
+        ];
+    }
+    
+    return $context;
+}
+
+/**
+ * Inject global context into workflow prompts
+ * 
+ * @since 1.0.0
+ * @param string $prompt The prompt template
+ * @param array $context_requirements Required context types
+ * @return string Modified prompt with injected context
+ */
+function pf_inject_global_context(string $prompt, array $context_requirements = []): string {
+    if (empty($context_requirements)) {
+        return $prompt;
+    }
+    
+    $global_context = pf_get_global_context();
+    $injected_context = [];
+    
+    foreach ($context_requirements as $req) {
+        $type = $req['context_type'] ?? '';
+        $required = $req['required'] ?? false;
+        $source = $req['source'] ?? 'user_profile';
+        $default = $req['default_value'] ?? '';
+        
+        switch ($type) {
+            case 'business':
+                if ($source === 'user_profile' && !empty($global_context['company_name'])) {
+                    $injected_context[] = "Company: " . $global_context['company_name'];
+                    if (!empty($global_context['industry'])) {
+                        $injected_context[] = "Industry: " . $global_context['industry'];
+                    }
+                    if (!empty($global_context['mission_values'])) {
+                        $injected_context[] = "Mission & Values: " . $global_context['mission_values'];
+                    }
+                }
+                break;
+                
+            case 'icp':
+                if ($source === 'user_profile' && !empty($global_context['target_audience'])) {
+                    $injected_context[] = "Target Audience: " . $global_context['target_audience'];
+                }
+                break;
+                
+            case 'tone':
+                if ($source === 'user_profile' && !empty($global_context['tone_of_voice'])) {
+                    $injected_context[] = "Tone of Voice: " . $global_context['tone_of_voice'];
+                }
+                break;
+                
+            case 'examples':
+                if ($source === 'user_profile' && !empty($global_context['reference_examples'])) {
+                    $examples = [];
+                    foreach ($global_context['reference_examples'] as $example) {
+                        if (!empty($example['title']) && !empty($example['ref_text_or_link'])) {
+                            $examples[] = $example['title'] . ": " . $example['ref_text_or_link'];
+                        }
+                    }
+                    if (!empty($examples)) {
+                        $injected_context[] = "Reference Examples:\n" . implode("\n", $examples);
+                    }
+                }
+                break;
+        }
+        
+        // Use default if no context found and not required
+        if (empty($injected_context) && !$required && !empty($default)) {
+            $injected_context[] = $default;
+        }
+    }
+    
+    if (!empty($injected_context)) {
+        $context_text = "\n\n--- Context ---\n" . implode("\n", $injected_context) . "\n--- End Context ---\n";
+        $prompt = $prompt . $context_text;
+    }
+    
+    return $prompt;
+}
+
 
 /* =====================================================
    Frontend CSS / JS Enqueue

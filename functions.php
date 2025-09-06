@@ -664,7 +664,7 @@ function pf_toggle_favorite_cb(){
   ]);
 }
 
-/* (Optional) AJAX: Liste abrufen */
+/* (Optional) AJAX: Liste abrufen. */
 add_action('wp_ajax_pf_get_favorites', 'pf_get_favorites_cb');
 function pf_get_favorites_cb(){
   try {

@@ -50,6 +50,10 @@ class PromptFinderCore {
         
         // Enhanced search functionality
         add_action('pre_get_posts', array($this, 'enhance_workflow_search'));
+        
+        // Auto-sync workflows to optimized table
+        add_action('save_post', array($this, 'auto_sync_workflow'), 10, 2);
+        add_action('delete_post', array($this, 'auto_delete_workflow'));
     }
     
     public function init(): void {
@@ -179,6 +183,15 @@ class PromptFinderCore {
             'manage_options',
             'pf-core-settings',
             array($this, 'admin_settings')
+        );
+        
+        add_submenu_page(
+            'pf-core-dashboard',
+            'Database Management',
+            'Database',
+            'manage_options',
+            'pf-database',
+            array($this, 'admin_database')
         );
     }
     
@@ -666,6 +679,197 @@ class PromptFinderCore {
     }
     
     /**
+     * Database management page
+     */
+    public function admin_database() {
+        global $wpdb;
+        
+        if (isset($_POST['action'])) {
+            check_admin_referer('pf_database_action');
+            
+            switch ($_POST['action']) {
+                case 'migrate_workflows':
+                    $this->migrate_existing_workflows();
+                    echo '<div class="notice notice-success"><p>Workflows migrated successfully!</p></div>';
+                    break;
+                    
+                case 'sync_all_workflows':
+                    $workflows = get_posts([
+                        'post_type' => 'workflows',
+                        'posts_per_page' => -1,
+                        'post_status' => 'any'
+                    ]);
+                    
+                    $synced = 0;
+                    foreach ($workflows as $workflow) {
+                        if ($this->sync_workflow_to_optimized_table($workflow->ID)) {
+                            $synced++;
+                        }
+                    }
+                    
+                    echo '<div class="notice notice-success"><p>Synced ' . $synced . ' workflows!</p></div>';
+                    break;
+                    
+                case 'clear_optimized_table':
+                    $workflows_table = $wpdb->prefix . 'pf_workflows_optimized';
+                    $wpdb->query("TRUNCATE TABLE $workflows_table");
+                    echo '<div class="notice notice-success"><p>Optimized table cleared!</p></div>';
+                    break;
+            }
+        }
+        
+        // Get table statistics
+        $workflows_table = $wpdb->prefix . 'pf_workflows_optimized';
+        $optimized_count = $wpdb->get_var("SELECT COUNT(*) FROM $workflows_table");
+        $total_workflows = wp_count_posts('workflows');
+        
+        ?>
+        <div class="wrap">
+            <h1>Database Management</h1>
+            
+            <div class="pf-database-stats">
+                <div class="pf-stat-card">
+                    <h3>Total Workflows (WordPress)</h3>
+                    <div class="pf-stat-number"><?php echo $total_workflows->publish; ?></div>
+                    <div class="pf-stat-meta"><?php echo $total_workflows->draft; ?> drafts</div>
+                </div>
+                
+                <div class="pf-stat-card">
+                    <h3>Optimized Table</h3>
+                    <div class="pf-stat-number"><?php echo $optimized_count; ?></div>
+                    <div class="pf-stat-meta">workflows synced</div>
+                </div>
+                
+                <div class="pf-stat-card">
+                    <h3>Sync Status</h3>
+                    <div class="pf-stat-number pf-status-<?php echo $optimized_count > 0 ? 'synced' : 'not-synced'; ?>">
+                        <?php echo $optimized_count > 0 ? '✅ Synced' : '❌ Not Synced'; ?>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="pf-database-actions">
+                <h2>Database Actions</h2>
+                
+                <form method="post" style="display: inline-block; margin-right: 10px;">
+                    <?php wp_nonce_field('pf_database_action'); ?>
+                    <input type="hidden" name="action" value="migrate_workflows">
+                    <input type="submit" class="button button-primary" value="Migrate All Workflows" 
+                           onclick="return confirm('This will migrate all workflows to the optimized table. Continue?')">
+                </form>
+                
+                <form method="post" style="display: inline-block; margin-right: 10px;">
+                    <?php wp_nonce_field('pf_database_action'); ?>
+                    <input type="hidden" name="action" value="sync_all_workflows">
+                    <input type="submit" class="button" value="Sync All Workflows">
+                </form>
+                
+                <form method="post" style="display: inline-block;">
+                    <?php wp_nonce_field('pf_database_action'); ?>
+                    <input type="hidden" name="action" value="clear_optimized_table">
+                    <input type="submit" class="button button-secondary" value="Clear Optimized Table" 
+                           onclick="return confirm('This will delete all data from the optimized table. Are you sure?')">
+                </form>
+            </div>
+            
+            <div class="pf-database-info">
+                <h2>Optimized Table Benefits</h2>
+                <ul>
+                    <li><strong>Faster Queries:</strong> All workflow data in one table with optimized indexes</li>
+                    <li><strong>Better Search:</strong> Full-text search on title and summary</li>
+                    <li><strong>Reduced Joins:</strong> No need to join multiple tables for workflow data</li>
+                    <li><strong>Auto-Sync:</strong> Automatically syncs when workflows are saved/updated</li>
+                    <li><strong>Analytics Ready:</strong> Built-in usage and rating tracking</li>
+                </ul>
+                
+                <h3>Table Structure</h3>
+                <pre style="background: #f1f1f1; padding: 15px; border-radius: 5px; overflow-x: auto;">
+CREATE TABLE wp_pf_workflows_optimized (
+    id bigint(20) NOT NULL AUTO_INCREMENT,
+    post_id bigint(20) NOT NULL,
+    title varchar(255) NOT NULL,
+    slug varchar(255) NOT NULL,
+    summary text,
+    access_mode varchar(50) DEFAULT 'free',
+    version varchar(50),
+    lastest_update datetime,
+    steps_count int(11) DEFAULT 0,
+    steps_data longtext,
+    rating_sum int(11) DEFAULT 0,
+    rating_count int(11) DEFAULT 0,
+    usage_count int(11) DEFAULT 0,
+    is_published tinyint(1) DEFAULT 1,
+    created_at datetime DEFAULT CURRENT_TIMESTAMP,
+    updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY post_id (post_id),
+    KEY title (title),
+    KEY slug (slug),
+    KEY access_mode (access_mode),
+    KEY is_published (is_published),
+    KEY rating_sum (rating_sum),
+    KEY usage_count (usage_count),
+    FULLTEXT KEY search_index (title, summary)
+);
+                </pre>
+            </div>
+        </div>
+        
+        <style>
+        .pf-database-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .pf-stat-card {
+            background: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .pf-stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0073aa;
+            margin: 10px 0;
+        }
+        .pf-stat-meta {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .pf-status-synced {
+            color: #46b450;
+        }
+        .pf-status-not-synced {
+            color: #dc3232;
+        }
+        .pf-database-actions {
+            background: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .pf-database-info {
+            background: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .pf-database-info ul {
+            margin: 15px 0;
+        }
+        .pf-database-info li {
+            margin: 8px 0;
+        }
+        </style>
+        <?php
+    }
+    
+    /**
      * Register REST API endpoints for n8n integration
      */
     public function register_api_endpoints() {
@@ -872,6 +1076,247 @@ class PromptFinderCore {
         ) DEFAULT CHARSET=utf8mb4;";
         
         dbDelta($sql);
+        
+        // ACF Workflows optimized table
+        $this->create_workflows_table();
+    }
+    
+    /**
+     * Create optimized workflows table for ACF data
+     */
+    private function create_workflows_table() {
+        global $wpdb;
+        
+        $workflows_table = $wpdb->prefix . 'pf_workflows_optimized';
+        
+        $sql = "CREATE TABLE IF NOT EXISTS $workflows_table (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            post_id bigint(20) NOT NULL,
+            title varchar(255) NOT NULL,
+            slug varchar(255) NOT NULL,
+            summary text,
+            access_mode varchar(50) DEFAULT 'free',
+            version varchar(50),
+            lastest_update datetime,
+            steps_count int(11) DEFAULT 0,
+            steps_data longtext,
+            rating_sum int(11) DEFAULT 0,
+            rating_count int(11) DEFAULT 0,
+            usage_count int(11) DEFAULT 0,
+            is_published tinyint(1) DEFAULT 1,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            UNIQUE KEY post_id (post_id),
+            KEY title (title),
+            KEY slug (slug),
+            KEY access_mode (access_mode),
+            KEY is_published (is_published),
+            KEY rating_sum (rating_sum),
+            KEY usage_count (usage_count),
+            KEY created_at (created_at),
+            KEY updated_at (updated_at),
+            FULLTEXT KEY search_index (title, summary)
+        ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
+        
+        dbDelta($sql);
+        
+        // Migrate existing workflows to optimized table
+        $this->migrate_existing_workflows();
+    }
+    
+    /**
+     * Migrate existing workflows to optimized table
+     */
+    private function migrate_existing_workflows() {
+        global $wpdb;
+        
+        $workflows_table = $wpdb->prefix . 'pf_workflows_optimized';
+        
+        // Check if migration is needed
+        $existing_count = $wpdb->get_var("SELECT COUNT(*) FROM $workflows_table");
+        if ($existing_count > 0) {
+            return; // Already migrated
+        }
+        
+        // Get all published workflows
+        $workflows = get_posts([
+            'post_type' => 'workflows',
+            'post_status' => 'publish',
+            'posts_per_page' => -1,
+            'meta_query' => [
+                [
+                    'key' => 'steps',
+                    'compare' => 'EXISTS'
+                ]
+            ]
+        ]);
+        
+        foreach ($workflows as $workflow) {
+            $this->sync_workflow_to_optimized_table($workflow->ID);
+        }
+        
+        error_log('[PF Core] Migrated ' . count($workflows) . ' workflows to optimized table');
+    }
+    
+    /**
+     * Sync workflow data to optimized table
+     */
+    public function sync_workflow_to_optimized_table(int $post_id): bool {
+        global $wpdb;
+        
+        try {
+            $workflow = get_post($post_id);
+            if (!$workflow || $workflow->post_type !== 'workflows') {
+                return false;
+            }
+            
+            // Get ACF fields
+            $steps = get_field('steps', $post_id) ?: [];
+            $summary = get_field('Summary', $post_id) ?: '';
+            $access_mode = get_field('access_mode', $post_id) ?: 'free';
+            $version = get_field('Version', $post_id) ?: '';
+            $lastest_update = get_field('lastest_update', $post_id) ?: '';
+            
+            // Get rating data
+            $rating_sum = (int) get_post_meta($post_id, 'pf_rating_sum', true);
+            $rating_count = (int) get_post_meta($post_id, 'pf_rating_count', true);
+            $usage_count = (int) get_post_meta($post_id, 'pf_usage_count', true);
+            
+            $workflows_table = $wpdb->prefix . 'pf_workflows_optimized';
+            
+            $data = [
+                'post_id' => $post_id,
+                'title' => $workflow->post_title,
+                'slug' => $workflow->post_name,
+                'summary' => $summary,
+                'access_mode' => $access_mode,
+                'version' => $version,
+                'lastest_update' => $lastest_update,
+                'steps_count' => count($steps),
+                'steps_data' => json_encode($steps),
+                'rating_sum' => $rating_sum,
+                'rating_count' => $rating_count,
+                'usage_count' => $usage_count,
+                'is_published' => $workflow->post_status === 'publish' ? 1 : 0,
+                'created_at' => $workflow->post_date,
+                'updated_at' => $workflow->post_modified
+            ];
+            
+            // Insert or update
+            $existing = $wpdb->get_var($wpdb->prepare(
+                "SELECT id FROM $workflows_table WHERE post_id = %d",
+                $post_id
+            ));
+            
+            if ($existing) {
+                $result = $wpdb->update($workflows_table, $data, ['post_id' => $post_id]);
+            } else {
+                $result = $wpdb->insert($workflows_table, $data);
+            }
+            
+            return $result !== false;
+            
+        } catch (Exception $e) {
+            error_log('[PF Core] Sync workflow error: ' . $e->getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Get optimized workflow data
+     */
+    public function get_optimized_workflow(int $post_id): ?array {
+        global $wpdb;
+        
+        $workflows_table = $wpdb->prefix . 'pf_workflows_optimized';
+        
+        $workflow = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM $workflows_table WHERE post_id = %d AND is_published = 1",
+            $post_id
+        ), ARRAY_A);
+        
+        if (!$workflow) {
+            return null;
+        }
+        
+        // Decode steps data
+        $workflow['steps'] = json_decode($workflow['steps_data'], true) ?: [];
+        unset($workflow['steps_data']);
+        
+        return $workflow;
+    }
+    
+    /**
+     * Search optimized workflows
+     */
+    public function search_optimized_workflows(string $search_term, array $filters = []): array {
+        global $wpdb;
+        
+        $workflows_table = $wpdb->prefix . 'pf_workflows_optimized';
+        
+        $where_conditions = ["is_published = 1"];
+        $where_values = [];
+        
+        // Search term
+        if (!empty($search_term)) {
+            $where_conditions[] = "(title LIKE %s OR summary LIKE %s)";
+            $search_like = '%' . $wpdb->esc_like($search_term) . '%';
+            $where_values[] = $search_like;
+            $where_values[] = $search_like;
+        }
+        
+        // Access mode filter
+        if (!empty($filters['access_mode'])) {
+            $where_conditions[] = "access_mode = %s";
+            $where_values[] = $filters['access_mode'];
+        }
+        
+        // Rating filter
+        if (!empty($filters['min_rating'])) {
+            $where_conditions[] = "(rating_sum / GREATEST(rating_count, 1)) >= %f";
+            $where_values[] = (float) $filters['min_rating'];
+        }
+        
+        $where_clause = implode(' AND ', $where_conditions);
+        
+        $sql = "SELECT * FROM $workflows_table WHERE $where_clause ORDER BY usage_count DESC, rating_sum DESC LIMIT 50";
+        
+        if (!empty($where_values)) {
+            $sql = $wpdb->prepare($sql, $where_values);
+        }
+        
+        $results = $wpdb->get_results($sql, ARRAY_A);
+        
+        // Decode steps data for each result
+        foreach ($results as &$result) {
+            $result['steps'] = json_decode($result['steps_data'], true) ?: [];
+            unset($result['steps_data']);
+        }
+        
+        return $results;
+    }
+    
+    /**
+     * Auto-sync workflow when saved
+     */
+    public function auto_sync_workflow(int $post_id, WP_Post $post): void {
+        if ($post->post_type === 'workflows') {
+            $this->sync_workflow_to_optimized_table($post_id);
+        }
+    }
+    
+    /**
+     * Auto-delete workflow from optimized table
+     */
+    public function auto_delete_workflow(int $post_id): void {
+        global $wpdb;
+        
+        $workflow = get_post($post_id);
+        if ($workflow && $workflow->post_type === 'workflows') {
+            $workflows_table = $wpdb->prefix . 'pf_workflows_optimized';
+            $wpdb->delete($workflows_table, ['post_id' => $post_id]);
+        }
     }
 }
 

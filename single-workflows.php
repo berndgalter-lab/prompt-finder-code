@@ -34,16 +34,50 @@ try {
 }
 
 /* -------------------------------------------------------
+   Try to load from optimized table first (if available)
+-------------------------------------------------------- */
+$optimized_workflow = null;
+if (class_exists('PromptFinderCore')) {
+    try {
+        $pf_core = new PromptFinderCore();
+        $optimized_workflow = $pf_core->get_optimized_workflow(get_the_ID());
+        
+        if ($optimized_workflow) {
+            error_log('[PF Single] Using optimized workflow data for post ID: ' . get_the_ID());
+        }
+    } catch (Exception $e) {
+        error_log('[PF Single] Optimized workflow loading error: ' . $e->getMessage());
+    }
+}
+
+/* -------------------------------------------------------
    ACF fields (content per workflow) - with error handling
+   Use optimized table if available, fallback to ACF
 -------------------------------------------------------- */
 try {
-    $summary = function_exists('get_field') ? get_field('Summary') : '';
-    $use_case = function_exists('get_field') ? get_field('use_case') : '';
-    $version = function_exists('get_field') ? get_field('Version') : '';
-    $lastest_update = function_exists('get_field') ? get_field('lastest_update') : ''; // returns d/m/Y per ACF
-    $steps = function_exists('get_field') ? get_field('steps') : []; // repeater
-    $has_steps = is_array($steps) && count($steps) > 0;
-    $total_steps = $has_steps ? count($steps) : 0;
+    if ($optimized_workflow) {
+        // Use optimized table data
+        $summary = $optimized_workflow['summary'] ?? '';
+        $use_case = function_exists('get_field') ? get_field('use_case') : ''; // Not in optimized table yet
+        $version = $optimized_workflow['version'] ?? '';
+        $lastest_update = $optimized_workflow['lastest_update'] ?? '';
+        $steps = $optimized_workflow['steps'] ?? [];
+        $has_steps = is_array($steps) && count($steps) > 0;
+        $total_steps = $has_steps ? count($steps) : 0;
+        
+        // Update usage count from optimized table
+        $usage_count = $optimized_workflow['usage_count'] ?? 0;
+    } else {
+        // Fallback to ACF fields
+        $summary = function_exists('get_field') ? get_field('Summary') : '';
+        $use_case = function_exists('get_field') ? get_field('use_case') : '';
+        $version = function_exists('get_field') ? get_field('Version') : '';
+        $lastest_update = function_exists('get_field') ? get_field('lastest_update') : ''; // returns d/m/Y per ACF
+        $steps = function_exists('get_field') ? get_field('steps') : []; // repeater
+        $has_steps = is_array($steps) && count($steps) > 0;
+        $total_steps = $has_steps ? count($steps) : 0;
+        $usage_count = 0;
+    }
 } catch (Exception $e) {
     error_log('[PF Single] ACF fields error: ' . $e->getMessage());
     $summary = '';
@@ -53,6 +87,7 @@ try {
     $steps = [];
     $has_steps = false;
     $total_steps = 0;
+    $usage_count = 0;
 }
 
 /* Value-Highlights - with error handling */

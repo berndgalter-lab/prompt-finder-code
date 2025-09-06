@@ -257,7 +257,7 @@ a.pf-btn:visited {
 
 /* Desktop Navigation */
 .pf-nav--desktop {
-  display: none;
+  display: block;
 }
 
 .pf-nav-list {
@@ -312,7 +312,7 @@ a.pf-btn:visited {
 
 /* Mobile Navigation */
 .pf-nav--mobile {
-  display: none;
+  display: none !important;
   position: absolute;
   top: 100%;
   left: 0;
@@ -323,7 +323,7 @@ a.pf-btn:visited {
 }
 
 .pf-nav--mobile[aria-hidden="false"] {
-  display: block;
+  display: block !important;
 }
 
 .pf-nav-list--mobile {
@@ -339,6 +339,20 @@ a.pf-btn:visited {
 /* ============================================================
    Responsive Breakpoints
    ============================================================ */
+@media (max-width: 767px) {
+  .pf-nav--desktop {
+    display: none;
+  }
+  
+  .pf-nav-toggle--mobile {
+    display: block;
+  }
+  
+  .pf-nav--mobile {
+    display: none !important;
+  }
+}
+
 @media (min-width: 768px) {
   .pf-nav--desktop {
     display: block;

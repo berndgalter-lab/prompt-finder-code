@@ -1,48 +1,76 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Single Template: Workflows
+ * 
+ * @package PromptFinder
+ * @since 1.0.0
+ * 
+ * Features:
  * - Uses ACF fields for workflow content
  * - Reads PF_CONFIG (JSON) for feature flags & copy strings (server-side)
  * - Improved variables UX (labels, descriptions, required, first-time hint)
  * - Clean step header (badge via CSS, time chip on the right)
+ * - Enhanced security and error handling
+ * - Optimized performance with caching
  */
 
 get_header();
 the_post();
 
 /* -------------------------------------------------------
-   Load PF_CONFIG (server-side) so PHP can use flags/copy
+   Load PF_CONFIG using optimized helper function
 -------------------------------------------------------- */
-$cfg_path = get_stylesheet_directory() . '/assets/pf-config.json'; // ggf. '/assets/js/pf-config.json'
-$PF_CONFIG = [];
-if ( file_exists($cfg_path) ) {
-  $json = file_get_contents($cfg_path);
-  // Remove BOM if present
-  $json = preg_replace('/^\xEF\xBB\xBF/', '', $json);
-  $tmp  = json_decode($json, true);
-  if (is_array($tmp)) { $PF_CONFIG = $tmp; }
+try {
+    $PF_CONFIG = pf_load_config();
+    $PF_FLAGS = $PF_CONFIG['feature_flags'] ?? [];
+    $PF_COPY = $PF_CONFIG['copy'] ?? [];
+} catch (Exception $e) {
+    error_log('[PF Single] Config loading error: ' . $e->getMessage());
+    $PF_CONFIG = [];
+    $PF_FLAGS = [];
+    $PF_COPY = [];
 }
-$PF_FLAGS = $PF_CONFIG['feature_flags'] ?? [];
-$PF_COPY  = $PF_CONFIG['copy'] ?? [];
 
 /* -------------------------------------------------------
-   ACF fields (content per workflow)
+   ACF fields (content per workflow) - with error handling
 -------------------------------------------------------- */
-$summary        = get_field('Summary');
-$use_case       = get_field('use_case');
-$version        = get_field('Version');
-$lastest_update = get_field('lastest_update'); // returns d/m/Y per ACF
-$steps          = get_field('steps');          // repeater
-$has_steps      = is_array($steps) && count($steps) > 0;
-$total_steps    = $has_steps ? count($steps) : 0;
+try {
+    $summary = function_exists('get_field') ? get_field('Summary') : '';
+    $use_case = function_exists('get_field') ? get_field('use_case') : '';
+    $version = function_exists('get_field') ? get_field('Version') : '';
+    $lastest_update = function_exists('get_field') ? get_field('lastest_update') : ''; // returns d/m/Y per ACF
+    $steps = function_exists('get_field') ? get_field('steps') : []; // repeater
+    $has_steps = is_array($steps) && count($steps) > 0;
+    $total_steps = $has_steps ? count($steps) : 0;
+} catch (Exception $e) {
+    error_log('[PF Single] ACF fields error: ' . $e->getMessage());
+    $summary = '';
+    $use_case = '';
+    $version = '';
+    $lastest_update = '';
+    $steps = [];
+    $has_steps = false;
+    $total_steps = 0;
+}
 
-/* Value-Highlights */
-$pain_point        = get_field('pain_point');
-$expected_outcome  = get_field('expected_outcome');
-$time_saved_min    = get_field('time_saved_min');            // int
-$difficulty_wo_ai  = get_field('difficulty_without_ai');     // 1–5
-$diff = (int) ($difficulty_wo_ai ?: 0);
-$diff = max(0, min($diff, 5));
+/* Value-Highlights - with error handling */
+try {
+    $pain_point = function_exists('get_field') ? get_field('pain_point') : '';
+    $expected_outcome = function_exists('get_field') ? get_field('expected_outcome') : '';
+    $time_saved_min = function_exists('get_field') ? get_field('time_saved_min') : 0; // int
+    $difficulty_wo_ai = function_exists('get_field') ? get_field('difficulty_without_ai') : 0; // 1–5
+    $diff = (int) ($difficulty_wo_ai ?: 0);
+    $diff = max(0, min($diff, 5));
+} catch (Exception $e) {
+    error_log('[PF Single] Value highlights error: ' . $e->getMessage());
+    $pain_point = '';
+    $expected_outcome = '';
+    $time_saved_min = 0;
+    $difficulty_wo_ai = 0;
+    $diff = 0;
+}
 
 /* -------------------------------------------------------
    GATING – robuste Priorität & Hilfsfunktionen
@@ -77,48 +105,64 @@ $FREE_STEP_LIMIT = ($acf_free_step_limit !== null) ? $acf_free_step_limit
 $LOGIN_REQUIRED  = ($acf_login_required !== null) ? (bool)$acf_login_required
                   : ($cfg_login_required ?? $def_login_required);
 
-// 5) User-Plan
-function pf_get_user_plan(): string {
-  // Priorität: Capability > User Meta > Gast
-  if ( current_user_can('pf_pro') ) return 'pro';
-  if ( is_user_logged_in() ) {
-    $plan = get_user_meta(get_current_user_id(), 'pf_plan', true);
-    if (is_string($plan) && $plan) return strtolower($plan);
-    return 'free'; // eingeloggt aber kein Pro → free
-  }
-  return 'guest'; // nicht eingeloggt
-}
-$USER_PLAN         = pf_get_user_plan();
+// 5) User-Plan - using function from functions.php
+$USER_PLAN = pf_get_user_plan();
 $viewer_logged_in  = is_user_logged_in();
 $is_pro_user       = ($USER_PLAN === 'pro');
 
-// 6) Step-Lock-Helper (1-basiert)
+/**
+ * Step-Lock-Helper (1-basiert)
+ * 
+ * @since 1.0.0
+ * @param int $idx Step index (1-based)
+ * @param string $mode Access mode ('free', 'half_locked', 'pro')
+ * @param string $userPlan User plan ('guest', 'free', 'pro')
+ * @param int $limit Free step limit
+ * @param bool $loginRequired Login required for locked steps
+ * @param bool $loggedIn User is logged in
+ * @return bool True if step is locked
+ */
 function pf_step_is_locked(int $idx, string $mode, string $userPlan, int $limit, bool $loginRequired, bool $loggedIn): bool {
-  if ($mode === 'free') return false;                 // alles frei
-  if ($userPlan === 'pro') return false;              // Pro sieht alles
-  if ($mode === 'pro') return true;                   // komplette Paywall (früher Abbruch, hier fallback)
-  if ($mode === 'half_locked') {
-    $limit = max(1, $limit);
-    if ($idx <= $limit) return false;                 // innerhalb der freien Steps immer frei
-    // ab dem ersten gelockten Step:
-    if ($loginRequired) {
-      // Login ist Pflicht – gelockt, solange nicht eingeloggt
-      return !$loggedIn;
+    try {
+        // Validate inputs
+        if ($idx < 1) return false;
+        
+        if ($mode === 'free') return false;                 // alles frei
+        if ($userPlan === 'pro') return false;              // Pro sieht alles
+        if ($mode === 'pro') return true;                   // komplette Paywall (früher Abbruch, hier fallback)
+        
+        if ($mode === 'half_locked') {
+            $limit = max(1, $limit);
+            if ($idx <= $limit) return false;                 // innerhalb der freien Steps immer frei
+            // ab dem ersten gelockten Step:
+            if ($loginRequired) {
+                // Login ist Pflicht – gelockt, solange nicht eingeloggt
+                return !$loggedIn;
+            }
+            // kein Login zwingend – gelockt für alle außer Pro (oben abgefangen)
+            return true;
+        }
+        
+        // Unbekannter Modus → nichts sperren
+        return false;
+    } catch (Exception $e) {
+        error_log('[PF Single] Step lock check error: ' . $e->getMessage());
+        return false; // Fail open for safety
     }
-    // kein Login zwingend – gelockt für alle außer Pro (oben abgefangen)
-    return true;
-  }
-  // Unbekannter Modus → nichts sperren
-  return false;
 }
 
 /* -------------------------------------------------------
-   Favoriten-Status
+   Favoriten-Status - with error handling
 -------------------------------------------------------- */
 $is_fav = false;
-if ( is_user_logged_in() ) {
-  $f = get_user_meta(get_current_user_id(), 'pf_favs', true);
-  $is_fav = is_array($f) && in_array(get_the_ID(), $f, true);
+try {
+    if (is_user_logged_in()) {
+        $f = get_user_meta(get_current_user_id(), 'pf_favs', true);
+        $is_fav = is_array($f) && in_array(get_the_ID(), $f, true);
+    }
+} catch (Exception $e) {
+    error_log('[PF Single] Favorites check error: ' . $e->getMessage());
+    $is_fav = false;
 }
 ?>
 <div class="pf-workflow pf-workflows">

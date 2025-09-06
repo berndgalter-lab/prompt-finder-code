@@ -465,7 +465,7 @@ add_action('manage_workflows_posts_custom_column', function ($column, $post_id) 
 
     switch ($column) {
         case 'pf_version':
-            echo esc_html(get_field('Version', $post_id) ?: '–');
+            echo esc_html(function_exists('get_field') ? (get_field('Version', $post_id) ?: '–') : '–');
             break;
 
         case 'pf_last_updated':

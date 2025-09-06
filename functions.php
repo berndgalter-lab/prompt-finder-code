@@ -3,6 +3,140 @@
 if ( !defined( 'ABSPATH' ) ) exit;
 
 /* =====================================================
+   Constants
+===================================================== */
+
+// Rating constants
+define('PF_MIN_RATING', 1);
+define('PF_MAX_RATING', 5);
+define('PF_DEFAULT_FREE_STEPS', 1);
+
+// Rate limiting constants
+define('PF_RATE_LIMIT_DURATION', 60); // seconds
+define('PF_FAV_LIMIT_DURATION', 60); // seconds
+
+// Cache constants
+define('PF_CACHE_DURATION', 3600); // 1 hour
+
+/* =====================================================
+   Helper Functions
+===================================================== */
+
+/**
+ * Load PF configuration from JSON file
+ * 
+ * @since 1.0.0
+ * @return array Configuration array
+ */
+function pf_load_config(): array {
+    static $config = null;
+    
+    if ($config === null) {
+        $cfg_file = get_stylesheet_directory() . '/assets/pf-config.json';
+        $config = [];
+        
+        if (file_exists($cfg_file)) {
+            $json = file_get_contents($cfg_file);
+            // Remove BOM if present
+            $json = preg_replace('/^\xEF\xBB\xBF/', '', $json);
+            $tmp = json_decode($json, true);
+            if (is_array($tmp)) {
+                $config = $tmp;
+            }
+        }
+    }
+    
+    return $config;
+}
+
+/**
+ * Get user's current plan
+ * 
+ * @since 1.0.0
+ * @return string User plan ('guest', 'free', 'pro')
+ */
+function pf_get_user_plan(): string {
+    if (current_user_can('pf_pro')) return 'pro';
+    if (is_user_logged_in()) {
+        $plan = get_user_meta(get_current_user_id(), 'pf_plan', true);
+        return is_string($plan) && $plan ? strtolower($plan) : 'free';
+    }
+    return 'guest';
+}
+
+/**
+ * Check if user has access based on gating rules
+ * 
+ * @since 1.0.0
+ * @param array $gating Gating configuration
+ * @return bool True if user has access
+ */
+function pf_user_has_access(array $gating): bool {
+    // Login-Pflicht?
+    if (!empty($gating['login_required']) && !is_user_logged_in()) return false;
+    
+    // Capability/Tier check
+    if (!empty($gating['required_cap']) && !current_user_can($gating['required_cap'])) return false;
+    
+    return true;
+}
+
+/**
+ * Enqueue asset with optimized versioning
+ * 
+ * @since 1.0.0
+ * @param string $handle Asset handle
+ * @param string $src Asset URL
+ * @param array $deps Dependencies
+ * @param string $type Asset type ('style' or 'script')
+ * @param bool $in_footer For scripts only
+ * @return void
+ */
+function pf_enqueue_asset(string $handle, string $src, array $deps = [], string $type = 'style', bool $in_footer = false): void {
+    $file_path = get_stylesheet_directory() . str_replace(get_stylesheet_directory_uri(), '', $src);
+    
+    if (file_exists($file_path)) {
+        $version = wp_get_environment_type() === 'production' 
+            ? wp_get_theme()->get('Version') 
+            : filemtime($file_path);
+            
+        if ($type === 'style') {
+            wp_enqueue_style($handle, $src, $deps, $version);
+        } else {
+            wp_enqueue_script($handle, $src, $deps, $version, $in_footer);
+        }
+    }
+}
+
+/**
+ * Get client IP address with proxy support
+ * 
+ * @since 1.0.0
+ * @return string Client IP address
+ */
+function pf_get_client_ip(): string {
+    $ip_keys = ['HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR'];
+    
+    foreach ($ip_keys as $key) {
+        if (!empty($_SERVER[$key])) {
+            $ip = $_SERVER[$key];
+            
+            // Handle comma-separated IPs (from proxies)
+            if (strpos($ip, ',') !== false) {
+                $ip = trim(explode(',', $ip)[0]);
+            }
+            
+            // Validate IP
+            if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                return $ip;
+            }
+        }
+    }
+    
+    return $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+}
+
+/* =====================================================
    Child Theme Basics
 ===================================================== */
 
@@ -22,7 +156,6 @@ add_filter( 'locale_stylesheet_uri', 'chld_thm_cfg_locale_css' );
    Frontend CSS / JS Enqueue
 ===================================================== */
 add_action('wp_enqueue_scripts', function () {
-
     // Basisvariablen
     $base = get_stylesheet_directory();
     $uri  = get_stylesheet_directory_uri();
@@ -35,30 +168,42 @@ add_action('wp_enqueue_scripts', function () {
         wp_get_theme()->get('Version')
     );
 
-    // Core (immer)
+    // Core (immer) - mit Caching für bessere Performance
     $core = $base . '/assets/css/pf-core.css';
-    if ( file_exists($core) ) {
-        wp_enqueue_style('pf-core', $uri . '/assets/css/pf-core.css', ['pf-child'], filemtime($core));
+    if (file_exists($core)) {
+        $version = wp_get_environment_type() === 'production' 
+            ? wp_get_theme()->get('Version') 
+            : filemtime($core);
+        wp_enqueue_style('pf-core', $uri . '/assets/css/pf-core.css', ['pf-child'], $version);
     }
 
     // Landing (nur Front Page)
-    if ( is_front_page() ) {
+    if (is_front_page()) {
         $f = $base . '/assets/css/pf-landing.css';
-        if ( file_exists($f) ) {
-            wp_enqueue_style('pf-landing', $uri . '/assets/css/pf-landing.css', ['pf-core'], filemtime($f));
+        if (file_exists($f)) {
+            $version = wp_get_environment_type() === 'production' 
+                ? wp_get_theme()->get('Version') 
+                : filemtime($f);
+            wp_enqueue_style('pf-landing', $uri . '/assets/css/pf-landing.css', ['pf-core'], $version);
         }
     }
 
     // Workflows (Single, Archive, Taxonomy)
-    if ( is_singular('workflows') || is_post_type_archive('workflows') || is_tax(['workflow_category','workflow_tag']) ) {
+    if (is_singular('workflows') || is_post_type_archive('workflows') || is_tax(['workflow_category','workflow_tag'])) {
         $f = $base . '/assets/css/pf-workflows.css';
-        if ( file_exists($f) ) {
-            wp_enqueue_style('pf-workflows', $uri . '/assets/css/pf-workflows.css', ['pf-core'], filemtime($f));
+        if (file_exists($f)) {
+            $version = wp_get_environment_type() === 'production' 
+                ? wp_get_theme()->get('Version') 
+                : filemtime($f);
+            wp_enqueue_style('pf-workflows', $uri . '/assets/css/pf-workflows.css', ['pf-core'], $version);
         }
 
         $js = $base . '/assets/js/pf-workflows.js';
-        if ( file_exists($js) ) {
-            wp_enqueue_script('pf-workflows-js', $uri . '/assets/js/pf-workflows.js', [], filemtime($js), true);
+        if (file_exists($js)) {
+            $js_version = wp_get_environment_type() === 'production' 
+                ? wp_get_theme()->get('Version') 
+                : filemtime($js);
+            wp_enqueue_script('pf-workflows-js', $uri . '/assets/js/pf-workflows.js', [], $js_version, true);
 
             // Bereits vorhanden: AJAX-Infos für Ratings
             wp_localize_script('pf-workflows-js', 'PF_WORKFLOWS', [
@@ -66,38 +211,21 @@ add_action('wp_enqueue_scripts', function () {
                 'nonce'    => wp_create_nonce('pf-rate-nonce'),
             ]);
 			
-			// PF Config laden und ins JS geben
-$cfg_file = get_stylesheet_directory() . '/assets/pf-config.json';
-$PF_CONFIG = [];
-if ( file_exists($cfg_file) ) {
-  $PF_CONFIG = json_decode(file_get_contents($cfg_file), true);
-}
-wp_localize_script('pf-workflows-js', 'PF_CONFIG', $PF_CONFIG);
-wp_localize_script('pf-workflows-js', 'PF_FLAGS', $PF_CONFIG['feature_flags'] ?? []);
-
-
-            // ✨ NEU: JSON-Config laden und als PF_CONFIG bereitstellen
-            // $cfg_path = $base . '/assets/js/pf-config.json';
-            $cfg_path = $base . '/assets/pf-config.json';
-            $cfg = [];
-
-            if ( file_exists($cfg_path) ) {
-                $json = file_get_contents($cfg_path);
-                $tmp  = json_decode($json, true);
-                if ( is_array($tmp) ) {
-                    $cfg = $tmp;
-                }
-            }
-
-            wp_localize_script('pf-workflows-js', 'PF_CONFIG', $cfg);
+			// PF Config laden und ins JS geben (einmalig)
+			$PF_CONFIG = pf_load_config();
+			wp_localize_script('pf-workflows-js', 'PF_CONFIG', $PF_CONFIG);
+			wp_localize_script('pf-workflows-js', 'PF_FLAGS', $PF_CONFIG['feature_flags'] ?? []);
         }
     }
 
     // Blog
-    if ( is_home() || is_singular('post') || is_category() || is_tag() || is_date() || is_author() ) {
+    if (is_home() || is_singular('post') || is_category() || is_tag() || is_date() || is_author()) {
         $f = $base . '/assets/css/pf-blog.css';
-        if ( file_exists($f) ) {
-            wp_enqueue_style('pf-blog', $uri . '/assets/css/pf-blog.css', ['pf-core'], filemtime($f));
+        if (file_exists($f)) {
+            $version = wp_get_environment_type() === 'production' 
+                ? wp_get_theme()->get('Version') 
+                : filemtime($f);
+            wp_enqueue_style('pf-blog', $uri . '/assets/css/pf-blog.css', ['pf-core'], $version);
         }
     }
 
@@ -117,31 +245,43 @@ add_action('enqueue_block_editor_assets', function(){
 
     // Core
     $core = $base . '/assets/css/pf-core.css';
-    if ( file_exists($core) ) {
-        wp_enqueue_style('pf-core-editor', $uri . '/assets/css/pf-core.css', [], filemtime($core));
+    if (file_exists($core)) {
+        $version = wp_get_environment_type() === 'production' 
+            ? wp_get_theme()->get('Version') 
+            : filemtime($core);
+        wp_enqueue_style('pf-core-editor', $uri . '/assets/css/pf-core.css', [], $version);
     }
 
     // Landing
-    if ( $screen->post_type === 'page' ) {
+    if ($screen->post_type === 'page') {
         $f = $base . '/assets/css/pf-landing.css';
-        if ( file_exists($f) ) {
-            wp_enqueue_style('pf-landing-editor', $uri . '/assets/css/pf-landing.css', ['pf-core-editor'], filemtime($f));
+        if (file_exists($f)) {
+            $version = wp_get_environment_type() === 'production' 
+                ? wp_get_theme()->get('Version') 
+                : filemtime($f);
+            wp_enqueue_style('pf-landing-editor', $uri . '/assets/css/pf-landing.css', ['pf-core-editor'], $version);
         }
     }
 
     // Workflows
-    if ( $screen->post_type === 'workflows' ) {
+    if ($screen->post_type === 'workflows') {
         $f = $base . '/assets/css/pf-workflows.css';
-        if ( file_exists($f) ) {
-            wp_enqueue_style('pf-workflows-editor', $uri . '/assets/css/pf-workflows.css', ['pf-core-editor'], filemtime($f));
+        if (file_exists($f)) {
+            $version = wp_get_environment_type() === 'production' 
+                ? wp_get_theme()->get('Version') 
+                : filemtime($f);
+            wp_enqueue_style('pf-workflows-editor', $uri . '/assets/css/pf-workflows.css', ['pf-core-editor'], $version);
         }
     }
 
     // Blog
-    if ( $screen->post_type === 'post' ) {
+    if ($screen->post_type === 'post') {
         $f = $base . '/assets/css/pf-blog.css';
-        if ( file_exists($f) ) {
-            wp_enqueue_style('pf-blog-editor', $uri . '/assets/css/pf-blog.css', ['pf-core-editor'], filemtime($f));
+        if (file_exists($f)) {
+            $version = wp_get_environment_type() === 'production' 
+                ? wp_get_theme()->get('Version') 
+                : filemtime($f);
+            wp_enqueue_style('pf-blog-editor', $uri . '/assets/css/pf-blog.css', ['pf-core-editor'], $version);
         }
     }
 
@@ -155,13 +295,38 @@ add_action('wp_ajax_pf_rate_workflow', 'pf_rate_workflow_cb');
 add_action('wp_ajax_nopriv_pf_rate_workflow', 'pf_rate_workflow_cb');
 
 function pf_rate_workflow_cb(){
-    check_ajax_referer('pf-rate-nonce', 'nonce');
+    try {
+        // Enhanced security check
+        if (!wp_verify_nonce($_POST['nonce'], 'pf-rate-nonce')) {
+            wp_send_json_error(['message' => 'Security check failed'], 403);
+        }
 
-    $post_id = isset($_POST['post_id']) ? (int) $_POST['post_id'] : 0;
-    $rating  = isset($_POST['rating'])  ? (int) $_POST['rating']  : 0;
+        // Rate limiting with improved IP detection
+        $user_ip = pf_get_client_ip();
+        $rate_limit_key = 'pf_rate_limit_' . md5($user_ip);
+        if (get_transient($rate_limit_key)) {
+            wp_send_json_error(['message' => 'Rate limit exceeded. Please wait before rating again.'], 429);
+        }
 
-    if ( !$post_id || $rating < 1 || $rating > 5 || get_post_type($post_id) !== 'workflows' ) {
-        wp_send_json_error(['message' => 'Invalid data'], 400);
+        // Input validation and sanitization
+        $post_id = isset($_POST['post_id']) ? (int) $_POST['post_id'] : 0;
+        $rating  = isset($_POST['rating'])  ? (int) $_POST['rating']  : 0;
+
+        // Validate inputs
+        if (!$post_id || $rating < PF_MIN_RATING || $rating > PF_MAX_RATING) {
+            wp_send_json_error(['message' => 'Invalid rating data'], 400);
+        }
+
+        if (get_post_type($post_id) !== 'workflows') {
+            wp_send_json_error(['message' => 'Invalid workflow'], 404);
+        }
+
+        // Set rate limit
+        set_transient($rate_limit_key, 1, PF_RATE_LIMIT_DURATION);
+
+    } catch (Exception $e) {
+        error_log('[PF Error] Rating error: ' . $e->getMessage());
+        wp_send_json_error(['message' => 'An unexpected error occurred'], 500);
     }
 
     // ---- Dupes blocken
@@ -177,11 +342,7 @@ function pf_rate_workflow_cb(){
         }
     } else {
         // IP-basiert 24h sperren (für Gäste)
-        $ip = '';
-        if (!empty($_SERVER['HTTP_CLIENT_IP']))        $ip = $_SERVER['HTTP_CLIENT_IP'];
-        elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) $ip = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0];
-        else $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
-
+        $ip = pf_get_client_ip();
         $transient_key = 'pf_rated_' . $post_id . '_' . md5($ip);
         if ( get_transient($transient_key) ) {
             $already = true;
@@ -217,40 +378,40 @@ function pf_rate_workflow_cb(){
 /* =====================================================
    Gating for LoggedIn Users
 ===================================================== */
-
-function pf_user_has_access(array $gating): bool {
-  // Login-Pflicht?
-  if (!empty($gating['login_required']) && !is_user_logged_in()) return false;
-
-  // (Später) Capability/Tier von LemonSqueezy:
-  if (!empty($gating['required_cap']) && !current_user_can($gating['required_cap'])) return false;
-
-  return true;
-}
+// Note: pf_user_has_access() function is already defined above in Helper Functions section
 
 
 /* =====================================================
    Pricing Page Assets
 ===================================================== */
 add_action('wp_enqueue_scripts', function () {
-    if ( ! is_page('pricing') ) return;
+    if (!is_page('pricing')) return;
 
     $base_dir = get_stylesheet_directory();
     $base_uri = get_stylesheet_directory_uri();
 
     $core_css = $base_dir . '/assets/css/pf-core.css';
-    if ( file_exists($core_css) ) {
-        wp_enqueue_style('pf-core', $base_uri . '/assets/css/pf-core.css', [], filemtime($core_css));
+    if (file_exists($core_css)) {
+        $version = wp_get_environment_type() === 'production' 
+            ? wp_get_theme()->get('Version') 
+            : filemtime($core_css);
+        wp_enqueue_style('pf-core', $base_uri . '/assets/css/pf-core.css', [], $version);
     }
 
     $pricing_css = $base_dir . '/assets/css/pf-pricing.css';
-    if ( file_exists($pricing_css) ) {
-        wp_enqueue_style('pf-pricing-css', $base_uri . '/assets/css/pf-pricing.css', ['pf-core'], filemtime($pricing_css));
+    if (file_exists($pricing_css)) {
+        $version = wp_get_environment_type() === 'production' 
+            ? wp_get_theme()->get('Version') 
+            : filemtime($pricing_css);
+        wp_enqueue_style('pf-pricing-css', $base_uri . '/assets/css/pf-pricing.css', ['pf-core'], $version);
     }
 
     $pricing_js = $base_dir . '/assets/js/pf-pricing.js';
-    if ( file_exists($pricing_js) ) {
-        wp_enqueue_script('pf-pricing-js', $base_uri . '/assets/js/pf-pricing.js', [], filemtime($pricing_js), true);
+    if (file_exists($pricing_js)) {
+        $version = wp_get_environment_type() === 'production' 
+            ? wp_get_theme()->get('Version') 
+            : filemtime($pricing_js);
+        wp_enqueue_script('pf-pricing-js', $base_uri . '/assets/js/pf-pricing.js', [], $version, true);
     }
 }, 110);
 
@@ -450,14 +611,34 @@ function pf_user_can_favorite(): bool {
 /* AJAX: Toggle Favorite */
 add_action('wp_ajax_pf_toggle_favorite', 'pf_toggle_favorite_cb');
 function pf_toggle_favorite_cb(){
-  check_ajax_referer('pf-fav-nonce', 'nonce');
-  if ( ! pf_user_can_favorite() ) {
-    wp_send_json_error(['message' => 'forbidden'], 403);
-  }
+  try {
+    // Enhanced security check
+    if (!wp_verify_nonce($_POST['nonce'], 'pf-fav-nonce')) {
+      wp_send_json_error(['message' => 'Security check failed'], 403);
+    }
 
-  $post_id = isset($_POST['post_id']) ? (int) $_POST['post_id'] : 0;
-  if ( ! $post_id || get_post_type($post_id) !== 'workflows' ) {
-    wp_send_json_error(['message' => 'invalid'], 400);
+    // Rate limiting for favorites
+    $user_ip = pf_get_client_ip();
+    $rate_limit_key = 'pf_fav_limit_' . md5($user_ip);
+    if (get_transient($rate_limit_key)) {
+      wp_send_json_error(['message' => 'Rate limit exceeded. Please wait before adding more favorites.'], 429);
+    }
+
+    if (!pf_user_can_favorite()) {
+      wp_send_json_error(['message' => 'Access denied'], 403);
+    }
+
+    $post_id = isset($_POST['post_id']) ? (int) $_POST['post_id'] : 0;
+    if (!$post_id || get_post_type($post_id) !== 'workflows') {
+      wp_send_json_error(['message' => 'Invalid workflow'], 400);
+    }
+
+    // Set rate limit
+    set_transient($rate_limit_key, 1, PF_FAV_LIMIT_DURATION);
+
+  } catch (Exception $e) {
+    error_log('[PF Error] Favorite error: ' . $e->getMessage());
+    wp_send_json_error(['message' => 'An unexpected error occurred'], 500);
   }
 
   $user_id = get_current_user_id();
@@ -486,11 +667,27 @@ function pf_toggle_favorite_cb(){
 /* (Optional) AJAX: Liste abrufen */
 add_action('wp_ajax_pf_get_favorites', 'pf_get_favorites_cb');
 function pf_get_favorites_cb(){
-  check_ajax_referer('pf-fav-nonce', 'nonce');
-  if ( ! is_user_logged_in() ) wp_send_json_success(['ids'=>[]]);
-  $favs = get_user_meta(get_current_user_id(), 'pf_favs', true);
-  if ( ! is_array($favs) ) $favs = [];
-  wp_send_json_success(['ids' => array_map('intval', $favs)]);
+  try {
+    // Enhanced security check
+    if (!wp_verify_nonce($_POST['nonce'], 'pf-fav-nonce')) {
+      wp_send_json_error(['message' => 'Security check failed'], 403);
+    }
+
+    if (!is_user_logged_in()) {
+      wp_send_json_success(['ids' => []]);
+    }
+
+    $favs = get_user_meta(get_current_user_id(), 'pf_favs', true);
+    if (!is_array($favs)) {
+      $favs = [];
+    }
+
+    wp_send_json_success(['ids' => array_map('intval', $favs)]);
+
+  } catch (Exception $e) {
+    error_log('[PF Error] Get favorites error: ' . $e->getMessage());
+    wp_send_json_error(['message' => 'An unexpected error occurred'], 500);
+  }
 }
 
 

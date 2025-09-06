@@ -8,18 +8,16 @@
     "share": true,
     "gating": true,
     "lock_badges": true,
-    "value_panel": true
+    "value_panel": true,
+    "mode_legend": true
   },
-	
-	{
+
   "workflow_defaults": {
     "access_mode": "half_locked",
-    "free_step_limit": 1,
-    "login_required": true
-  }
-}
+    "free_step_limit": 2,
+    "login_required": false
+  },
 
-{
   "copy": {
     "badge_free": "Free",
     "badge_free_sub": "All steps unlocked",
@@ -32,15 +30,8 @@
     "legend_title": "What do these labels mean?",
     "legend_free": "All steps unlocked.",
     "legend_limited": "A few steps are free, the rest requires an account or Pro.",
-    "legend_pro": "Only available for Pro members."
-  },
-  "feature_flags": {
-    "mode_legend": true
-  }
-}
-
-
-  "copy": {
+    "legend_pro": "Only available for Pro members.",
+    
     "howto_title": "How to use this workflow:",
     "howto_items": [
       "Stay in the same chat unless a step explicitly says otherwise.",
@@ -48,11 +39,11 @@
       "If the next step uses the previous result, insert {previous_output}."
     ],
     "up_next_title": "Up next:",
-    "uses_prev_hint": "Use this step’s output as {previous_output} in the next prompt.",
+    "uses_prev_hint": "Use this step's output as {previous_output} in the next prompt.",
     "continue_hint": "Continue to <em>Step {n}: {title}</em>.",
     "go_to_step": "Go to Step {n}",
     "done_title": "Done:",
-    "done_text": "You’ve completed all steps. Review the result and save it to your process/tool.",
+    "done_text": "You've completed all steps. Review the result and save it to your process/tool.",
     "prompt_label": "Prompt",
     "copy_prompt": "Copy prompt",
     "copied_label": "Copied",
@@ -61,6 +52,7 @@
     "paste_hint": "Paste into the same chat and run.",
     "share_title": "Share",
     "copy_link": "Copy link",
+    "rating_thanks": "Thanks! ({val}/5)",
 
     "value_pain": "Pain Points",
     "value_outcome": "Expected Outcome",

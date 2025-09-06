@@ -193,6 +193,15 @@ class PromptFinderCore {
             'pf-database',
             array($this, 'admin_database')
         );
+        
+        add_submenu_page(
+            'pf-core-dashboard',
+            'Create Workflow',
+            'Create Workflow',
+            'manage_options',
+            'pf-create-workflow',
+            array($this, 'admin_create_workflow')
+        );
     }
     
     /**
@@ -751,12 +760,20 @@ class PromptFinderCore {
             <div class="pf-database-actions">
                 <h2>Database Actions</h2>
                 
-                <form method="post" style="display: inline-block; margin-right: 10px;">
-                    <?php wp_nonce_field('pf_database_action'); ?>
-                    <input type="hidden" name="action" value="migrate_workflows">
-                    <input type="submit" class="button button-primary" value="Migrate All Workflows" 
-                           onclick="return confirm('This will migrate all workflows to the optimized table. Continue?')">
-                </form>
+                <?php if ($total_workflows->publish > 0 && $optimized_count == 0): ?>
+                    <!-- Migration needed -->
+                    <form method="post" style="display: inline-block; margin-right: 10px;">
+                        <?php wp_nonce_field('pf_database_action'); ?>
+                        <input type="hidden" name="action" value="migrate_workflows">
+                        <input type="submit" class="button button-primary" value="Migrate All Workflows" 
+                               onclick="return confirm('This will migrate all workflows to the optimized table. Continue?')">
+                    </form>
+                <?php else: ?>
+                    <!-- No migration needed -->
+                    <div class="pf-info-box">
+                        <p><strong>✅ No migration needed!</strong> All workflows will be automatically saved to the optimized table.</p>
+                    </div>
+                <?php endif; ?>
                 
                 <form method="post" style="display: inline-block; margin-right: 10px;">
                     <?php wp_nonce_field('pf_database_action'); ?>
@@ -863,6 +880,171 @@ CREATE TABLE wp_pf_workflows_optimized (
             margin: 15px 0;
         }
         .pf-database-info li {
+            margin: 8px 0;
+        }
+        .pf-info-box {
+            background: #e7f3ff;
+            border: 1px solid #0073aa;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            color: #0073aa;
+        }
+        .pf-info-box p {
+            margin: 0;
+            font-weight: 500;
+        }
+        </style>
+        <?php
+    }
+    
+    /**
+     * Create workflow admin page
+     */
+    public function admin_create_workflow() {
+        if (isset($_POST['create_workflow'])) {
+            check_admin_referer('pf_create_workflow');
+            
+            $workflow_data = [
+                'title' => sanitize_text_field($_POST['title']),
+                'summary' => sanitize_textarea_field($_POST['summary']),
+                'access_mode' => sanitize_text_field($_POST['access_mode']),
+                'version' => sanitize_text_field($_POST['version']),
+                'steps' => json_decode(stripslashes($_POST['steps']), true) ?: []
+            ];
+            
+            $workflow_id = $this->create_workflow_in_optimized_table($workflow_data);
+            
+            if ($workflow_id) {
+                echo '<div class="notice notice-success"><p>Workflow created successfully! ID: ' . $workflow_id . '</p></div>';
+            } else {
+                echo '<div class="notice notice-error"><p>Failed to create workflow. Check error logs.</p></div>';
+            }
+        }
+        
+        ?>
+        <div class="wrap">
+            <h1>Create New Workflow</h1>
+            <p>Create workflows directly in the optimized database table for maximum performance.</p>
+            
+            <form method="post" id="pf-create-workflow-form">
+                <?php wp_nonce_field('pf_create_workflow'); ?>
+                
+                <table class="form-table">
+                    <tr>
+                        <th scope="row"><label for="title">Workflow Title *</label></th>
+                        <td>
+                            <input type="text" name="title" id="title" class="regular-text" required>
+                            <p class="description">The main title of your workflow</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><label for="summary">Summary</label></th>
+                        <td>
+                            <textarea name="summary" id="summary" rows="3" class="large-text"></textarea>
+                            <p class="description">Brief description of what this workflow does</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><label for="access_mode">Access Mode</label></th>
+                        <td>
+                            <select name="access_mode" id="access_mode">
+                                <option value="free">Free</option>
+                                <option value="half_locked">Half Locked</option>
+                                <option value="pro">Pro Only</option>
+                            </select>
+                            <p class="description">Who can access this workflow</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><label for="version">Version</label></th>
+                        <td>
+                            <input type="text" name="version" id="version" class="regular-text" placeholder="1.0.0">
+                            <p class="description">Version number for this workflow</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><label for="steps">Steps (JSON) *</label></th>
+                        <td>
+                            <textarea name="steps" id="steps" rows="10" class="large-text code" required placeholder='[
+  {
+    "title": "Step 1: Define the task",
+    "objective": "Clearly define what you want to achieve",
+    "prompt": "I want you to help me with: {task_description}",
+    "variables": [
+      {
+        "var_name": "task_description",
+        "var_label": "Task Description",
+        "var_description": "Describe what you want to accomplish",
+        "required": true
+      }
+    ],
+    "estimated_time_min": 5
+  }
+]'></textarea>
+                            <p class="description">Define your workflow steps in JSON format. Use the example above as a template.</p>
+                        </td>
+                    </tr>
+                </table>
+                
+                <?php submit_button('Create Workflow', 'primary', 'create_workflow'); ?>
+            </form>
+            
+            <div class="pf-workflow-help">
+                <h2>Workflow Creation Help</h2>
+                <h3>JSON Structure:</h3>
+                <pre style="background: #f1f1f1; padding: 15px; border-radius: 5px; overflow-x: auto;">
+{
+  "title": "Step title",
+  "objective": "What this step accomplishes",
+  "prompt": "The actual prompt with {variables}",
+  "variables": [
+    {
+      "var_name": "variable_name",
+      "var_label": "Display Label",
+      "var_description": "Help text",
+      "required": true,
+      "example_value": "Example"
+    }
+  ],
+  "estimated_time_min": 5,
+  "example_output": "Expected result",
+  "checklist": [
+    {"check_item": "Check this"},
+    {"check_item": "And this"}
+  ]
+}
+                </pre>
+                
+                <h3>Benefits of Direct Creation:</h3>
+                <ul>
+                    <li><strong>Maximum Performance:</strong> No ACF overhead</li>
+                    <li><strong>Optimized Storage:</strong> Direct database storage</li>
+                    <li><strong>Full-Text Search:</strong> Built-in search capabilities</li>
+                    <li><strong>Analytics Ready:</strong> Usage tracking included</li>
+                </ul>
+            </div>
+        </div>
+        
+        <style>
+        .pf-workflow-help {
+            background: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+        .pf-workflow-help h2 {
+            margin-top: 0;
+        }
+        .pf-workflow-help h3 {
+            color: #0073aa;
+            margin-top: 20px;
+        }
+        .pf-workflow-help ul {
+            margin: 15px 0;
+        }
+        .pf-workflow-help li {
             margin: 8px 0;
         }
         </style>
@@ -1127,6 +1309,7 @@ CREATE TABLE wp_pf_workflows_optimized (
     
     /**
      * Migrate existing workflows to optimized table
+     * Note: This is only needed if you have existing workflows in the old format
      */
     private function migrate_existing_workflows() {
         global $wpdb;
@@ -1151,6 +1334,11 @@ CREATE TABLE wp_pf_workflows_optimized (
                 ]
             ]
         ]);
+        
+        if (empty($workflows)) {
+            error_log('[PF Core] No existing workflows found to migrate');
+            return;
+        }
         
         foreach ($workflows as $workflow) {
             $this->sync_workflow_to_optimized_table($workflow->ID);
@@ -1298,11 +1486,69 @@ CREATE TABLE wp_pf_workflows_optimized (
     }
     
     /**
+     * Create new workflow directly in optimized table
+     * This bypasses ACF and stores data directly in the optimized table
+     */
+    public function create_workflow_in_optimized_table(array $workflow_data): ?int {
+        global $wpdb;
+        
+        try {
+            $workflows_table = $wpdb->prefix . 'pf_workflows_optimized';
+            
+            // Validate required fields
+            if (empty($workflow_data['title']) || empty($workflow_data['steps'])) {
+                throw new Exception('Title and steps are required');
+            }
+            
+            $data = [
+                'post_id' => $workflow_data['post_id'] ?? 0,
+                'title' => sanitize_text_field($workflow_data['title']),
+                'slug' => sanitize_title($workflow_data['title']),
+                'summary' => sanitize_textarea_field($workflow_data['summary'] ?? ''),
+                'access_mode' => sanitize_text_field($workflow_data['access_mode'] ?? 'free'),
+                'version' => sanitize_text_field($workflow_data['version'] ?? ''),
+                'lastest_update' => $workflow_data['lastest_update'] ?? '',
+                'steps_count' => count($workflow_data['steps']),
+                'steps_data' => json_encode($workflow_data['steps']),
+                'rating_sum' => 0,
+                'rating_count' => 0,
+                'usage_count' => 0,
+                'is_published' => 1,
+                'created_at' => current_time('mysql'),
+                'updated_at' => current_time('mysql')
+            ];
+            
+            $result = $wpdb->insert($workflows_table, $data);
+            
+            if ($result === false) {
+                throw new Exception('Failed to insert workflow: ' . $wpdb->last_error);
+            }
+            
+            $workflow_id = $wpdb->insert_id;
+            error_log('[PF Core] Created workflow ' . $workflow_id . ' directly in optimized table');
+            
+            return $workflow_id;
+            
+        } catch (Exception $e) {
+            error_log('[PF Core] Create workflow error: ' . $e->getMessage());
+            return null;
+        }
+    }
+    
+    /**
      * Auto-sync workflow when saved
+     * This ensures all workflows are stored in the optimized table
      */
     public function auto_sync_workflow(int $post_id, WP_Post $post): void {
         if ($post->post_type === 'workflows') {
-            $this->sync_workflow_to_optimized_table($post_id);
+            // Always sync to optimized table
+            $success = $this->sync_workflow_to_optimized_table($post_id);
+            
+            if ($success) {
+                error_log('[PF Core] Successfully synced workflow ' . $post_id . ' to optimized table');
+            } else {
+                error_log('[PF Core] Failed to sync workflow ' . $post_id . ' to optimized table');
+            }
         }
     }
     

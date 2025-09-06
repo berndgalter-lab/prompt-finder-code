@@ -34,7 +34,8 @@ try {
 }
 
 /* -------------------------------------------------------
-   Try to load from optimized table first (if available)
+   Load from optimized table (primary source)
+   All new workflows are saved directly to the optimized table
 -------------------------------------------------------- */
 $optimized_workflow = null;
 if (class_exists('PromptFinderCore')) {
@@ -44,6 +45,8 @@ if (class_exists('PromptFinderCore')) {
         
         if ($optimized_workflow) {
             error_log('[PF Single] Using optimized workflow data for post ID: ' . get_the_ID());
+        } else {
+            error_log('[PF Single] No optimized workflow data found for post ID: ' . get_the_ID() . ' - using ACF fallback');
         }
     } catch (Exception $e) {
         error_log('[PF Single] Optimized workflow loading error: ' . $e->getMessage());

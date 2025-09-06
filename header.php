@@ -41,7 +41,9 @@ $home_url = esc_url( home_url( '/' ) );
     
     <!-- Preload critical resources -->
     <link rel="preload" href="<?php echo get_template_directory_uri(); ?>/assets/css/pf-core.css" as="style">
+    <?php if (is_singular('workflows') || is_post_type_archive('workflows') || is_tax(['workflow_category','workflow_tag'])): ?>
     <link rel="preload" href="<?php echo get_template_directory_uri(); ?>/assets/js/pf-workflows.js" as="script">
+    <?php endif; ?>
     
     <!-- DNS Prefetch for external resources -->
     <link rel="dns-prefetch" href="//fonts.googleapis.com">

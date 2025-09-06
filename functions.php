@@ -216,6 +216,16 @@ add_action('wp_enqueue_scripts', function () {
 			wp_localize_script('pf-workflows-js', 'PF_CONFIG', $PF_CONFIG);
 			wp_localize_script('pf-workflows-js', 'PF_FLAGS', $PF_CONFIG['feature_flags'] ?? []);
         }
+
+    }
+
+    // Navigation JavaScript (global für alle Seiten)
+    $nav_js = $base . '/assets/js/pf-navigation.js';
+    if (file_exists($nav_js)) {
+        $nav_version = (function_exists('wp_get_environment_type') && wp_get_environment_type() === 'production') 
+            ? wp_get_theme()->get('Version') 
+            : filemtime($nav_js);
+        wp_enqueue_script('pf-navigation-js', $uri . '/assets/js/pf-navigation.js', [], $nav_version, true);
     }
 
     // Blog

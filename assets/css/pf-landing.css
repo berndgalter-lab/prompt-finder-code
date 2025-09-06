@@ -1,0 +1,179 @@
+/* ==== PF Landing (Home only) ==== */
+
+/* Hero */
+.pf-hero{
+  position:relative; overflow:hidden; padding:92px 0 72px;
+  background:
+    radial-gradient(1000px 400px at 20% -10%, rgba(110,231,255,.12), transparent 60%),
+    radial-gradient(800px 300px at 80% 0%, rgba(139,92,246,.15), transparent 60%);
+  border-bottom:1px solid var(--pf-border); color:var(--pf-text);
+}
+.pf-hero .pf-wrap{ display:grid; gap:36px; grid-template-columns: 1.1fr 1fr; align-items:center; }
+@media (max-width: 900px){ .pf-hero .pf-wrap{ grid-template-columns:1fr; padding-top:24px; } }
+
+.pf-hero h1{
+  font-size: clamp(2.2rem, 6vw, 3.5rem); line-height:1.08; letter-spacing:-0.02em; margin:0 0 16px;
+}
+.pf-hero-trust{
+  display:flex; flex-wrap:wrap; gap:14px 18px; padding:0; margin:22px 0 0; list-style:none; color:var(--pf-text-dim);
+}
+.pf-hero-trust li{ position:relative; padding-left:20px; font-size:.98rem; }
+.pf-hero-trust li::before{
+  content:""; position:absolute; left:0; top:.35rem; width:10px; height:10px; border-radius:999px;
+  background:linear-gradient(180deg,#34d399,#10b981); box-shadow:0 0 0 2px rgba(16,185,129,.15);
+}
+
+/* Visual Mock */
+.pf-hero-visual{ display:flex; justify-content:center; }
+.pf-mock{
+  width:min(520px, 100%); border:1px solid var(--pf-border); border-radius:16px;
+  background:linear-gradient(180deg,#0e121a,#0b0f16);
+  padding:14px; box-shadow:0 10px 40px rgba(0,0,0,.35); color:#fff;
+}
+.pf-mock-top{ height:16px; display:flex; gap:6px; }
+.pf-mock-top .dot{ width:8px; height:8px; border-radius:999px; background:#2a3345; }
+.pf-mock-card{ margin-top:12px; padding:16px; border:1px solid #202636; border-radius:12px; background:#0a0f15; }
+.pf-mock-card.secondary{ opacity:.9; }
+.pf-mock-card h3{ margin:0 0 8px; font-size:1rem; }
+.pf-mock-rows .row{ height:10px; border-radius:6px; background:#1d2636; margin:10px 0; }
+.pf-mock-rows .row.short{ width:60%; }
+.pf-mock-actions{ display:flex; gap:8px; margin-top:10px; }
+.pf-mock-actions .chip{ font-size:.75rem; padding:.25rem .5rem; border-radius:999px; background:#121a25; border:1px solid #223047; color:#a9b4c3; }
+
+/* Problem/Solution Tiles */
+.pf-3grid{ display:grid; gap:18px; grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 900px){ .pf-3grid{ grid-template-columns:1fr; } }
+.pf-tile{
+  background:var(--pf-card); border:1px solid var(--pf-border);
+  padding:18px; border-radius:14px; transition:.18s ease transform, .18s ease box-shadow, .18s ease border-color;
+}
+.pf-tile:hover{ transform:translateY(-2px); box-shadow:0 10px 26px rgba(0,0,0,.25); border-color:#263045; }
+.pf-tile .ico{ font-size:1.25rem; line-height:1; margin-bottom:.25rem; }
+.pf-tile h3{ margin:.2rem 0 .35rem; font-size:1.05rem; }
+
+/* Steps (Landing) */
+.pf-steps{ list-style:none; display:grid; gap:12px; padding:0; }
+.pf-steps li{
+  display:grid; grid-template-columns: 36px 1fr; gap:12px; align-items:flex-start;
+  padding:14px; border:1px dashed #243046; border-radius:12px; background:#0c1118;
+}
+.pf-steps .num{
+  width:36px; height:36px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center;
+  background:linear-gradient(180deg,#5db9ff,#8b5cf6); color:#081119; font-weight:800;
+}
+
+/* Landing Cards (Erweiterung über Core) */
+.pf-card:hover{ transform:translateY(-3px); box-shadow:0 16px 30px rgba(0,0,0,.28); border-color:#2b3447; }
+.pf-card:has(.pf-card-link:focus-visible){ outline:2px solid var(--pf-accent); outline-offset:2px; }
+.pf-card-link:focus-visible{ outline:2px solid var(--pf-accent); outline-offset:4px; }
+
+.pf-card-media{
+  position:relative; aspect-ratio:16/9; background:linear-gradient(180deg,#111826,#0d131f);
+  border-bottom:1px solid var(--pf-border); display:grid; place-items:center;
+}
+.pf-card-media img{ width:100%; height:100%; object-fit:cover; display:block; }
+.pf-card-media::after{
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(180deg, transparent, rgba(0,0,0,.28) 60%, rgba(0,0,0,.45));
+  pointer-events:none;
+}
+.pf-card-badge{
+  position:absolute; top:10px; left:10px; z-index:2;
+  font-size:.75rem; font-weight:700; letter-spacing:.04em;
+  padding:.25rem .5rem; border-radius:999px;
+  background:linear-gradient(180deg,#58e0ff,#8b5cf6); color:#081119; border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 4px 12px rgba(93,185,255,.25);
+}
+.pf-card-act{ position:absolute; top:8px; right:8px; z-index:2; display:flex; gap:6px; }
+.pf-heart{
+  width:32px; height:32px; border-radius:999px; display:grid; place-items:center;
+  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.1); color:#cbd5e1;
+}
+.pf-heart:hover{ filter:brightness(1.1); transform:translateY(-1px); }
+
+.pf-card--featured .pf-card-media{ aspect-ratio:21/9; }
+.pf-card--featured{ border-color:#2b3447; }
+
+/* Bottom CTA */
+.pf-cta-inner{
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  background:linear-gradient(180deg,#0e141f,#0b0f17);
+  border:1px solid var(--pf-border); border-radius:16px; padding:18px;
+}
+@media (max-width: 700px){ .pf-cta-inner{ flex-direction:column; text-align:center; } }
+
+/* Light-Mode Feinheiten für Landing */
+@media (prefers-color-scheme: light){
+  .pf-hero{
+    background:
+      radial-gradient(1000px 400px at 20% -10%, rgba(93,185,255,.15), transparent 60%),
+      radial-gradient(800px 300px at 80% 0%, rgba(139,92,246,.18), transparent 60%);
+    border-bottom:1px solid var(--pf-border);
+  }
+  .pf-card:hover, .pf-tile:hover{ box-shadow:0 18px 34px rgba(2,6,23,.07); }
+}
+
+
+/* Contrast Hotfix: Landing Steps */
+.pf-steps li{
+  background: var(--pf-card);
+  border-color: var(--pf-border);
+  color: var(--pf-text);
+}
+.pf-steps li p,
+.pf-steps li strong,
+.pf-steps li h3 { color: inherit; }
+
+
+/* === Contrast Hotfix: CTA Section === */
+.pf-section.pf-cta,
+.pf-cta,
+.pf-cta-inner{
+  color: var(--pf-text);          /* Text sicher hell */
+}
+
+.pf-section.pf-cta h2,
+.pf-section.pf-cta p{
+  color: inherit;                 /* Überschriften/Absatz übernehmen die Farbe */
+}
+
+/* Falls ein Ghost-Button im CTA auftaucht */
+.pf-section.pf-cta .pf-btn--ghost{
+  color: var(--pf-text);
+  border-color: var(--pf-border);
+}
+.pf-section.pf-cta .pf-btn--ghost:hover{
+  background:#0e1119;
+  border-color:#2a3140;
+}
+
+/* Optional: Light-Mode-Finetuning für den CTA-Hintergrund */
+@media (prefers-color-scheme: light){
+  .pf-cta-inner{
+    /* willst du im Light-Mode lieber ein helles Band? dann aktivieren: */
+    /* background: linear-gradient(180deg,#f8fafc,#eef2f7); */
+    border-color: var(--pf-border);
+  }
+}
+
+/* === Tile Headings klar hervorheben === */
+.pf-tile h3{
+  font-size: clamp(1.05rem, 2.2vw, 1.25rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--pf-text);
+  margin: .2rem 0 .35rem;
+}
+
+/* Fließtext in Tiles leicht abdunkeln für mehr Kontrast */
+.pf-tile p{
+  color: var(--pf-text-dim);
+  line-height: 1.55;
+}
+
+/* Falls irgendwo sonst H3 in Sektionen flach wirken: allgemeiner PF-Fallback */
+.pf-section h3{
+  font-size: clamp(1.05rem, 2vw, 1.22rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}

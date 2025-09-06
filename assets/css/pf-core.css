@@ -1,0 +1,341 @@
+/* ==== PF Core (shared) ==== */
+
+/* Layout-Primitives */
+.pf-wrap{ max-width:var(--pf-wrap); margin:0 auto; padding:0 1.25rem; }
+.pf-section{ padding:var(--pf-space) 0; border-top:1px solid var(--pf-border); }
+.pf-section:first-of-type{ border-top:none; }
+
+/* Typo-Basics */
+.pf-sub{ color:var(--pf-text-dim); line-height:1.6; }
+
+/* -----------------------------
+   Buttons (robust gegen Theme)
+   -----------------------------*/
+.pf-btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
+  padding:.85rem 1.1rem; border-radius:12px; border:1px solid var(--pf-border);
+  font-weight:600; text-decoration:none; transition:.18s ease;
+  line-height:1; cursor:pointer;
+}
+a.pf-btn, a.pf-btn:visited{ text-decoration:none !important; }
+
+/* Primary */
+.pf-btn--primary{
+  background:linear-gradient(180deg,#58e0ff, #5db9ff 35%, var(--pf-accent-2));
+  color:#081119; border-color:transparent;
+  box-shadow:0 8px 22px rgba(93,185,255,.25), 0 2px 0 rgba(8,17,25,.35) inset;
+}
+.pf-btn--primary:hover,
+.pf-btn--primary:focus,
+.pf-btn--primary:focus-visible{
+  transform: translateY(-1px) scale(1.01);
+  color:#081119;
+  outline:none;
+}
+
+/* Ghost – KONTRASTSICHER (auch bei Theme-Overrides) */
+.pf-btn--ghost{
+  background:transparent;
+  color:var(--pf-text);
+  border-color:var(--pf-border);
+}
+.pf-btn--ghost:hover,
+.pf-btn--ghost:focus,
+.pf-btn--ghost:focus-visible{
+  background:#0e1119;               /* dunkles Overlay */
+  color:var(--pf-text);              /* Text hell */
+  border-color:#2a3140;
+  outline:none;
+}
+
+/* Härtere Absicherung gegen Theme-Regeln (GeneratePress, Gutenberg in .entry-content / .inside-article) */
+.entry-content a.pf-btn.pf-btn--ghost,
+.entry-content .pf-btn.pf-btn--ghost,
+.inside-article a.pf-btn.pf-btn--ghost,
+.inside-article .pf-btn.pf-btn--ghost{
+  background:transparent !important;
+  color:var(--pf-text) !important;
+  border:1px solid var(--pf-border) !important;
+  text-decoration:none !important;
+}
+.entry-content a.pf-btn.pf-btn--ghost:hover,
+.entry-content .pf-btn.pf-btn--ghost:hover,
+.inside-article a.pf-btn.pf-btn--ghost:hover,
+.inside-article .pf-btn.pf-btn--ghost:hover,
+.entry-content a.pf-btn.pf-btn--ghost:focus,
+.entry-content .pf-btn.pf-btn--ghost:focus,
+.inside-article a.pf-btn.pf-btn--ghost:focus,
+.inside-article .pf-btn.pf-btn--ghost:focus,
+.entry-content a.pf-btn.pf-btn--ghost:focus-visible,
+.entry-content .pf-btn.pf-btn--ghost:focus-visible,
+.inside-article a.pf-btn.pf-btn--ghost:focus-visible,
+.inside-article .pf-btn.pf-btn--ghost:focus-visible{
+  background:#0e1119 !important;
+  color:var(--pf-text) !important;
+  border-color:#2a3140 !important;
+}
+
+/* Falls Gutenberg eine .has-text-color etc. auf den Button schreibt: */
+.pf-btn.pf-btn--ghost:where(.has-text-color, .has-primary-color, .has-contrast-color){
+  color:var(--pf-text) !important;
+}
+/* Kinder erben korrekt (Icons/Spans) */
+.pf-btn--ghost *{ color:inherit !important; fill:currentColor; }
+
+.pf-cta{ display:flex; gap:12px; margin-top:22px; flex-wrap:wrap; }
+
+/* -----------------------------
+   Chips
+   -----------------------------*/
+.pf-chips{ display:flex; flex-wrap:wrap; gap:8px; }
+.pf-chip{
+  font-size:.75rem; padding:.25rem .55rem; border-radius:999px;
+  background:#121a25; border:1px solid #223047; color:#a9b4c3;
+}
+.pf-chip--green{ background:linear-gradient(180deg,#34d399,#10b981); color:#0b1218; border-color:transparent; }
+
+/* -----------------------------
+   Cards (Basis)
+   -----------------------------*/
+.pf-grid{ display:grid; gap:18px; grid-template-columns:repeat(3,1fr); }
+@media (max-width:1100px){ .pf-grid{ grid-template-columns:repeat(2,1fr); } }
+@media (max-width:720px){ .pf-grid{ grid-template-columns:1fr; } }
+
+.pf-card{
+  position:relative; display:flex; flex-direction:column; min-height:100%;
+  background:var(--pf-card); border:1px solid var(--pf-border);
+  border-radius:var(--pf-radius); overflow:hidden; transition:.18s ease;
+}
+.pf-card:hover{ transform:translateY(-3px); box-shadow:0 16px 30px rgba(0,0,0,.28); border-color:#2b3447; }
+.pf-card-link{ position:absolute; inset:0; z-index:2; }
+.pf-card-body{ padding:14px; display:flex; flex-direction:column; gap:8px; flex:1; }
+.pf-card-title{ margin:.1rem 0; font-size:1.05rem; line-height:1.25; }
+.pf-card-desc{ color:var(--pf-text-dim); font-size:.95rem; line-height:1.5; }
+.pf-meta{ margin-top:auto; display:flex; gap:12px; flex-wrap:wrap; align-items:center; color:var(--pf-text-dim); font-size:.88rem; }
+.pf-dot{ width:6px; height:6px; border-radius:999px; background:#94a3b8; display:inline-block; margin-right:6px; transform:translateY(-1px); }
+.pf-sep::before{ content:"•"; opacity:.6; margin:0 6px; }
+
+/* -----------------------------
+   Utilities
+   -----------------------------*/
+.pf-badge{
+  display:inline-flex; align-items:center; gap:.5ch;
+  padding:.35rem .6rem; border:1px solid #1e293b; border-radius:999px;
+  background:linear-gradient(180deg,#0c111a,#0a0e14);
+  color:#bfefff; font-weight:600; font-size:.8rem; letter-spacing:.06em;
+}
+
+/* ----------------------------------------
+   Color Safety (PF-Bereiche immer lesbar)
+   ----------------------------------------*/
+.pf-hero,.pf-section,.pf-workflow,.pf-card,.pf-tile,.pf-steps,.pf-step,.pf-card-body,.pf-cta-inner{ color:var(--pf-text); }
+.pf-sub,.pf-hero-trust,.pf-summary,.pf-card-desc,.pf-meta{ color:var(--pf-text-dim); }
+.pf-section a:not(.pf-btn){ color:var(--pf-accent); }
+
+/* ----------------------------------------
+   Bulletproof CTA (sitewide wiederverwendbar)
+   ----------------------------------------*/
+/* Lokale Tokens im CTA auf "dark" scopen */
+.pf-section.pf-cta{
+  --pf-text:#e9ecf1;
+  --pf-text-dim:#b8c0cc;
+  --pf-border:#1f2430;
+  --pf-card:#0f1116;
+  --pf-bg-soft:#0e141f;
+  color: var(--pf-text);
+}
+/* Inhalt erbt Farbe */
+.pf-section.pf-cta :where(h1,h2,h3,h4,p,li,small,span,strong){ color: inherit; }
+.pf-section.pf-cta a:not(.pf-btn){ color: var(--pf-accent); }
+
+/* Band */
+.pf-cta-inner{
+  background: linear-gradient(180deg,#0e141f,#0b0f17);
+  border: 1px solid var(--pf-border);
+  border-radius: 16px;
+  padding: 18px;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+}
+@media (max-width:700px){
+  .pf-cta-inner{ flex-direction:column; text-align:center; }
+}
+
+/* Ghost-Button im CTA (extra-spezifisch) */
+.pf-section.pf-cta .pf-btn.pf-btn--ghost,
+.pf-cta-inner .pf-btn.pf-btn--ghost{
+  background:transparent !important;
+  color:var(--pf-text) !important;
+  border:1px solid var(--pf-border) !important;
+}
+.pf-section.pf-cta .pf-btn.pf-btn--ghost:hover,
+.pf-cta-inner .pf-btn.pf-btn--ghost:hover,
+.pf-section.pf-cta .pf-btn.pf-btn--ghost:focus,
+.pf-cta-inner .pf-btn.pf-btn--ghost:focus{
+  background:#0e1119 !important;
+  color:var(--pf-text) !important;
+  border-color:#2a3140 !important;
+}
+
+/* Theme-/Gutenberg-Overrides neutralisieren */
+.entry-content .pf-section.pf-cta,
+.inside-article .pf-section.pf-cta{ color: var(--pf-text); }
+.pf-section.pf-cta :where(.has-text-color, .has-primary-color, .has-contrast-color){
+  color: inherit !important;
+}
+
+/* === Ghost Button: Text immer weiß beim Hover/Focus/Active === */
+.pf-btn.pf-btn--ghost:hover,
+.pf-btn.pf-btn--ghost:focus,
+.pf-btn.pf-btn--ghost:active,
+a.pf-btn.pf-btn--ghost:hover,
+a.pf-btn.pf-btn--ghost:focus,
+a.pf-btn.pf-btn--ghost:active,
+.entry-content a.pf-btn.pf-btn--ghost:hover,
+.entry-content a.pf-btn.pf-btn--ghost:focus,
+.inside-article a.pf-btn.pf-btn--ghost:hover,
+.inside-article a.pf-btn.pf-btn--ghost:focus,
+.wp-block-button__link.pf-btn.pf-btn--ghost:hover,
+.wp-block-button__link.pf-btn.pf-btn--ghost:focus {
+  color: #ffffff !important;
+  background: #0e1119 !important;   /* dunkles Overlay */
+  border-color: #2a3140 !important;
+  outline: none;
+}
+
+/* Falls der "visited"-Zustand reinfunkt, neutralisieren */
+a.pf-btn.pf-btn--ghost:visited {
+  color: var(--pf-text) !important;
+}
+
+/* ===== Header Site ===== */
+.pf-header-site {
+  background: var(--pf-bg-soft);
+  border-bottom: 1px solid var(--pf-border);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+.pf-header-site .pf-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 1.25rem;
+}
+
+/* Logo */
+.pf-logo {
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--pf-text);
+  text-decoration: none;
+}
+
+/* Navigation */
+.pf-nav {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+.pf-nav a {
+  color: var(--pf-text-dim);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color .2s ease;
+}
+.pf-nav a:hover {
+  color: var(--pf-accent);
+}
+
+/* Mobile */
+@media (max-width: 720px) {
+  .pf-nav {
+    display: none; /* später evtl. Burger-Menü */
+  }
+}
+
+/* ===== Footer ===== */
+.pf-footer {
+  background: var(--pf-bg-soft);
+  border-top: 1px solid var(--pf-border);
+  padding: 48px 0 24px;
+  font-size: .95rem;
+  color: var(--pf-text-dim);
+}
+.pf-footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+  gap: 32px;
+  margin-bottom: 32px;
+}
+.pf-footer-col h4 {
+  font-size: 1rem;
+  margin-bottom: .75rem;
+  color: var(--pf-text);
+}
+.pf-footer-col ul {
+  list-style: none; padding: 0; margin: 0; display: grid; gap: .45rem;
+}
+.pf-footer-col a {
+  color: var(--pf-text-dim);
+  text-decoration: none;
+  transition: color .18s ease;
+}
+.pf-footer-col a:hover { color: var(--pf-accent); }
+
+.pf-footer-social { display:flex; gap:.75rem; }
+.pf-footer-social a {
+  width:36px; height:36px; border-radius:50%;
+  display:grid; place-items:center;
+  background: var(--pf-card);
+  border:1px solid var(--pf-border);
+  color: var(--pf-text-dim);
+  transition: all .2s ease;
+}
+.pf-footer-social a:hover { color:#fff; background: var(--pf-accent); border-color: transparent; }
+
+.pf-footer-bottom {
+  border-top:1px solid var(--pf-border);
+  padding-top:16px;
+  text-align:center;
+  font-size:.85rem;
+  color:var(--pf-text-dim);
+}
+
+
+.pf-header-site .custom-logo {
+  height: 28px;   /* oder 32px, je nach Look */
+  width: auto;
+}
+
+/* Im Footer etwas kleiner oder gleich groß */
+.pf-footer .custom-logo {
+  height: 24px;
+  width: auto;
+}
+
+/* Header-Button soll exakt wie die globale Primary aussehen */
+.pf-header-site .pf-btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
+  padding:.85rem 1.1rem; border-radius:12px; border:1px solid var(--pf-border);
+  font-weight:600; line-height:1; cursor:pointer; text-decoration:none;
+}
+
+/* Primary – identisch zu Startseite */
+.pf-header-site .pf-btn--primary{
+  background:linear-gradient(180deg,#58e0ff, #5db9ff 35%, var(--pf-accent-2));
+  color:#081119; border-color:transparent;
+  box-shadow:0 8px 22px rgba(93,185,255,.25), 0 2px 0 rgba(8,17,25,.35) inset;
+}
+.pf-header-site .pf-btn--primary:hover,
+.pf-header-site .pf-btn--primary:focus,
+.pf-header-site .pf-btn--primary:focus-visible{
+  transform: translateY(-1px) scale(1.01);
+  color:#081119; outline:none;
+}
+
+/* Sicherheit gegen Nav-Link-Regel/Theme-Overrides */
+.pf-header-site .pf-nav .pf-btn,
+.pf-header-site .pf-nav .pf-btn:visited{
+  color:#081119 !important;             /* bleibt dunkel auf hellblauem Button */
+  text-decoration:none !important;
+}

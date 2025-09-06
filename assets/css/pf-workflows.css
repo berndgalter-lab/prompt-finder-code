@@ -1,0 +1,674 @@
+/* =========================================================
+   PF Workflows (clean)
+   - nutzt globale Tokens aus pf-core.css
+   - Styles gelten für .pf-workflow / .pf-workflows
+   - einheitlicher Step-Badge (Auto-Counter)
+   - saubere Rating-Stars (gelb), Einmal-Vote-States
+   - verständliche Variablen-Formulare
+   ========================================================= */
+
+/* ========== Container & Header ========== */
+.pf-workflow{
+  max-width: var(--pf-wrap);
+  margin: 0 auto;
+  padding: 24px 20px 40px;
+  color: var(--pf-text);
+}
+.pf-header{
+  display: grid;
+  gap: 16px;
+  align-items: center;
+  border-bottom: 1px solid var(--pf-border);
+  padding-bottom: 16px;
+  margin-bottom: 18px;
+}
+.pf-title{
+  font-size: clamp(1.6rem, 3.8vw, 2.4rem);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.pf-thumb img{
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  border: 1px solid var(--pf-border);
+}
+.pf-summary{ color: var(--pf-text-dim); font-size: 1.05rem; line-height: 1.6; margin: .25rem 0 .75rem; }
+
+/* Info-Pills (+Icon-Variante) */
+.pf-info{ list-style: none; display: flex; flex-wrap: wrap; gap: 10px 14px; padding: 0; margin: 0; color: var(--pf-text-dim); }
+.pf-info li{
+  display: inline-flex; align-items: center; gap: .5rem;
+  background: var(--pf-bg-soft);
+  border: 1px solid var(--pf-border);
+  border-radius: 999px;
+  padding: .45rem .8rem;
+  color: var(--pf-text);
+}
+.pf-pill-ico{ display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; color: var(--pf-accent); }
+.pf-pill-label{ color: var(--pf-text-dim); font-size: .9rem; }
+.pf-pill-value{ font-weight: 600; }
+
+/* ========== Content Wrapper ========== */
+.pf-content{ margin: 18px 0 6px; }
+.pf-empty{ color: var(--pf-text-dim); }
+
+/* ========== Steps (Karten & Badge) ========== */
+.pf-steps{
+  list-style: none;
+  padding-left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 20px 0 0;
+  counter-reset: pfstep; /* für Badge */
+}
+.pf-step,
+.pf-step-card{
+  border: 1px solid var(--pf-border);
+  border-radius: 14px;
+  background: var(--pf-card);
+  box-shadow: 0 6px 22px rgba(0,0,0,.16);
+  padding: 16px;
+  transition: .18s ease;
+  color: var(--pf-text);
+  scroll-margin-top: 80px; /* Smooth-scroll Offset */
+}
+.pf-step:hover,
+.pf-step-card:hover{
+  border-color: color-mix(in srgb, var(--pf-border) 70%, #0000);
+  box-shadow: 0 12px 28px rgba(0,0,0,.22);
+  transform: translateY(-1px);
+}
+
+/* Step-Meta & Header */
+.pf-step-meta{ display: flex; gap: 10px; flex-wrap: wrap; font-size: .9rem; color: var(--pf-text-dim); margin-bottom: .35rem; }
+.pf-step-id{ display: none !important; } /* IDs nicht anzeigen */
+.pf-badge{
+  display: inline-flex; align-items: center; gap: .4ch;
+  padding: .25rem .55rem; border-radius: 999px;
+  border: 1px solid var(--pf-border); background: var(--pf-bg-soft);
+  font-weight: 600; font-size: .8rem;
+}
+.pf-step-head{
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; margin: 0 0 .4rem 0;
+}
+.pf-step-time{
+  font-size: .82rem; font-weight: 600;
+  background: var(--pf-bg-soft);
+  border: 1px solid var(--pf-border);
+  border-radius: 999px;
+  padding: .2rem .6rem;
+  color: var(--pf-text-dim);
+  white-space: nowrap;
+}
+
+/* Step-Titel + runder Auto-Badge (einheitlich) */
+.pf-step-title{
+  display: flex; align-items: center; gap: .55rem;
+  margin: 0; line-height: 1.2;
+  font-size: 1.18rem; font-weight: 750;
+}
+.pf-step-title::before{
+  counter-increment: pfstep;
+  content: counter(pfstep);
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 50%;
+  font-weight: 700; font-size: .95rem; color: #fff;
+  background: var(--pf-accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--pf-accent) 20%, transparent);
+}
+
+/* Objective */
+.pf-sub{ color: color-mix(in srgb, var(--pf-text) 78%, transparent); line-height: 1.6; }
+
+/* ========== Variablen-Formular ========== */
+.pf-vars{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+  margin: .6rem 0 .25rem;
+}
+.pf-vars-hint{
+  grid-column: 1 / -1;
+  margin: 0 0 6px 0; padding: .55rem .7rem;
+  border: 1px dashed var(--pf-border);
+  border-radius: 10px;
+  background: var(--pf-surface-soft);
+  font-size: .92rem; color: var(--pf-text-dim);
+  display: flex; gap: .6rem; align-items: center;
+}
+.pf-hint-hide{ margin-left: auto; background: transparent; border: 0; cursor: pointer; font-size: .85rem; opacity: .75; }
+.pf-hint-hide:hover{ opacity: 1; text-decoration: underline; }
+
+.pf-var{
+  display: block;
+  padding: 10px 12px;
+  border: 1px solid var(--pf-border);
+  border-radius: 10px;
+  background: var(--pf-card);
+}
+.pf-var-label{ display: block; font-weight: 600; margin-bottom: 6px; }
+.pf-req{ color: #f87171; }
+.pf-var input{
+  width: 100%; height: 40px; padding: 8px 10px;
+  border: 1px solid var(--pf-border); border-radius: 8px;
+  background: var(--pf-bg); outline: none; font-size: 1rem;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.pf-var input:focus{ border-color: var(--pf-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--pf-accent) 25%, transparent); }
+.pf-var-help{ display: block; margin-top: 6px; font-size: .85rem; color: var(--pf-text-dim); }
+
+.pf-var.is-required input.is-empty{
+  border-color: #f87171 !important;
+  box-shadow: 0 0 0 3px rgba(248,113,113,.18);
+}
+
+/* ========== Prompt + CTA ========== */
+.pf-prompt{
+  width: 100%;
+  white-space: pre-wrap;
+  background: var(--pf-bg-soft);
+  color: var(--pf-text);
+  border: 1px solid var(--pf-border);
+  border-radius: 10px;
+  padding: .8rem; margin-top: .5rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  line-height: 1.5; font-size: .95rem;
+}
+.pf-prompt:focus{
+  outline: 0; border-color: var(--pf-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--pf-accent) 24%, transparent);
+}
+
+.pf-cta{ display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
+.pf-copy{
+  display: inline-flex; align-items: center; gap: .5rem;
+  padding: .55rem .9rem; border-radius: 10px;
+  border: 1px solid var(--pf-border);
+  background: linear-gradient(180deg, var(--pf-accent), color-mix(in srgb, var(--pf-accent) 70%, #0000));
+  color: #081119; font-weight: 700; transition: transform .15s ease;
+}
+.pf-copy:hover{ transform: translateY(-1px); }
+.pf-help-inline{ color: var(--pf-text-dim); font-size: .95rem; }
+
+/* Copy-Feedback im Button */
+.pf-copy.is-copied{
+  background: linear-gradient(180deg, #34d399, #10b981) !important;
+  border-color: #059669 !important;
+  color: #07191a !important;
+  transform: translateY(-1px);
+}
+.pf-copy.is-failed{
+  background: linear-gradient(180deg, #fda4a4, #fb7185) !important;
+  border-color: #ef4444 !important;
+  color: #170606 !important;
+}
+
+/* Start-Button (Header) – kein Full-Width trotz Core-Regeln */
+.pf-header #pf-start.pf-start-btn.pf-btn,
+.pf-header .pf-start-btn.pf-btn{
+  display: inline-flex !important;
+  width: auto !important;
+  max-width: fit-content !important;
+  flex: 0 0 auto !important;
+  align-self: flex-start !important;
+  text-decoration: none;
+  margin-top: .75rem;
+}
+.pf-header .pf-start-btn:hover{ filter: brightness(1.05); }
+.pf-header .pf-start-btn:active{ transform: translateY(1px); }
+
+/* ========== Example & Checklist ========== */
+.pf-example{ margin-top: .6rem; }
+.pf-example summary{ cursor: pointer; color: var(--pf-accent); }
+.pf-example pre{
+  white-space: pre-wrap; background: var(--pf-bg-soft); color: var(--pf-text);
+  border: 1px solid var(--pf-border); border-radius: 10px; padding: .7rem; margin-top: .5rem;
+}
+.pf-checklist{ margin: .75rem 0 0 0; }
+.pf-checklist-label{ font-weight: 600; }
+.pf-checklist-list{ list-style: none; padding-left: 0; margin: .35rem 0 0 0; }
+.pf-checklist-list li{ margin: .25rem 0; }
+
+/* Interaktive Checkboxen (falls per JS aktiviert) */
+.pf-checklist-list li label.pf-check{
+  display: flex; align-items: center; gap: .55rem; cursor: pointer;
+}
+.pf-checklist-list li label.pf-check input{
+  appearance: none; -webkit-appearance: none; width: 18px; height: 18px;
+  border: 1px solid var(--pf-border); border-radius: 4px; background: var(--pf-bg-soft);
+  display: inline-block; position: relative;
+}
+.pf-checklist-list li label.pf-check input:checked{
+  background: var(--pf-success, #22c55e); border-color: var(--pf-success, #22c55e);
+}
+.pf-checklist-list li label.pf-check input:checked::after{
+  content: ""; position: absolute; left: 4px; top: 1px; width: 6px; height: 10px;
+  border: 2px solid #081119; border-top: 0; border-left: 0; transform: rotate(45deg);
+}
+.pf-checklist-list li.is-checked span{ text-decoration: line-through; color: var(--pf-text-dim); }
+
+/* ========== Next-Panel ========== */
+.pf-next.pf-tile{
+  background: color-mix(in srgb, var(--pf-card) 85%, #ffffff 15%);
+  border: 1px solid color-mix(in srgb, var(--pf-border) 70%, #0000);
+  border-radius: 14px;
+  padding: .9rem 1rem;
+}
+.pf-next strong{ display: block; margin-bottom: .35rem; }
+.pf-next-text{ color: var(--pf-text-dim); margin-bottom: .5rem; }
+
+/* ========== Share & 3-Grid unten ========== */
+.pf-share.pf-tile{
+  background: var(--pf-card);
+  border: 1px solid var(--pf-border);
+  border-radius: 14px;
+  padding: .75rem 1rem;
+  display: flex; align-items: center; gap: .75rem; flex-wrap: wrap;
+}
+.pf-share-btn{
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: .4rem; padding: .5rem .9rem; border-radius: 999px;
+  border: 1px solid var(--pf-border);
+  background: var(--pf-bg-soft);
+  color: var(--pf-text); text-decoration: none; font-weight: 600; font-size: .9rem;
+  transition: filter .18s ease;
+}
+.pf-share-btn:hover{ filter: brightness(.95); }
+.pf-3grid{ display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+@media (max-width: 960px){ .pf-3grid{ grid-template-columns: 1fr; } }
+
+/* ========== Rating (Sterne) ========== */
+.pf-rating.pf-tile{
+  background: var(--pf-card);
+  border: 1px solid var(--pf-border);
+  border-radius: 14px;
+  padding: .75rem 1rem;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.pf-rating-title{ margin: 0 0 .35rem 0; font-weight: 700; }
+.pf-rating-meta{ margin-top: .35rem; display: flex; align-items: center; gap: .5rem; color: var(--pf-text-dim); }
+.pf-rating-avg{ font-weight: 700; }
+.pf-rating-count, .pf-rating-msg{ color: var(--pf-text-dim); }
+
+/* Sterne als Buttons mit Icon via ::before */
+.pf-stars{ display: flex; gap: .25rem; align-items: center; }
+.pf-star{
+  all: unset;
+  -webkit-appearance: none; appearance: none;
+  cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px;
+  background: transparent !important; border: none !important; border-radius: 0 !important;
+  box-shadow: none !important; padding: 0; margin: 0;
+  font-size: 0; position: relative;
+}
+.pf-star::before{
+  content: "★";
+  font-size: 1.4rem; line-height: 1;
+  color: #9aa3ae; /* inaktiv: grau */
+  display: block; transform: translateY(-1px);
+}
+.pf-star.is-on::before{ color: #facc15; } /* aktiv: gelb */
+.pf-star:hover::before{ filter: drop-shadow(0 0 6px rgba(250,204,21,.45)); }
+.pf-star:focus-visible{
+  outline: 2px solid color-mix(in srgb, var(--pf-accent) 40%, transparent);
+  outline-offset: 2px;
+}
+.pf-star.is-locked{ cursor: not-allowed; opacity: .5; }
+
+/* ========== How-to (Details) ========== */
+.pf-howto{ padding: 12px 14px; }
+.pf-howto > summary{
+  cursor: pointer; list-style: none; font-weight: 700;
+  display: flex; align-items: center; gap: .5rem;
+}
+.pf-howto > summary::-webkit-details-marker{ display: none; }
+.pf-howto > summary::after{
+  content: '▾'; transform: rotate(0deg); transition: transform .2s ease; opacity: .75;
+}
+.pf-howto[open] > summary::after{ transform: rotate(180deg); }
+.pf-howto ol{ margin: .5rem 0 0; padding-left: 1.25rem; }
+.pf-howto .pf-howto-hide{
+  margin-top: .5rem; font-size: .85rem; opacity: .8;
+  background: transparent; border: 1px dashed var(--pf-border);
+  padding: .35rem .6rem; border-radius: 8px; cursor: pointer; color: grey;
+}
+.pf-howto .pf-howto-hide:hover{ opacity: 1; }
+
+/* ========== Responsive Feinschliff ========== */
+@media (max-width: 720px){
+  .pf-header{ gap: 12px; }
+  .pf-vars{ grid-template-columns: 1fr; }
+}
+@media (max-width: 480px){
+  .pf-cta{ gap: 10px; }
+  .pf-copy, .pf-btn{ width: 100%; justify-content: center; }
+}
+
+/* ===== HOTFIX: Value Panel (Pain/Outcome/Time/Difficulty) ===== */
+.pf-value{
+  margin-top: 10px;
+  background: var(--pf-card);
+  border: 1px solid var(--pf-border);
+  border-radius: 14px;
+  padding: 14px 14px 6px;
+}
+
+.pf-value-grid{
+  list-style: none;
+  margin: 0; padding: 0;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
+}
+@media (max-width: 1024px){ .pf-value-grid{ grid-template-columns: repeat(2, minmax(220px, 1fr)); } }
+@media (max-width: 560px){  .pf-value-grid{ grid-template-columns: 1fr; } }
+
+.pf-value-item{
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  grid-auto-rows: auto;
+  align-items: start;
+  gap: 8px 10px;
+  border: 1px solid var(--pf-border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: color-mix(in srgb, var(--pf-card) 88%, #ffffff 12%);
+  box-shadow: none; /* überstimmt evtl. vererbte Card-Shadows */
+}
+
+.pf-value-ico{
+  grid-row: 1 / span 2;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px;
+  color: var(--pf-accent);
+}
+
+.pf-value-kicker{
+  font-size: .82rem; letter-spacing: .02em; text-transform: uppercase;
+  color: var(--pf-text-dim);
+}
+
+.pf-value-text{
+  color: var(--pf-text);
+  line-height: 1.5;
+}
+
+.pf-diff-stars{ letter-spacing: .08em; color: var(--pf-accent); }
+
+.pf-diff-hint {
+  display:block;
+  font-size:.8rem;
+  color: var(--pf-text-dim);
+  margin-top:.2rem;
+}
+
+/* ---- Header-Top: Save rechts neben der H1 (unabhängig von den Pills) ---- */
+.pf-header-top{
+  display:flex; align-items:flex-start; gap:12px;
+}
+.pf-header-top .pf-header-spacer{ flex:1 1 auto; } /* schiebt Button nach rechts */
+@media (max-width:720px){
+  .pf-header-top{ justify-content:flex-start; }
+  .pf-header-top .pf-header-spacer{ display:none; } /* mobil: Button unter H1 */
+}
+
+/* Favoriten: Chip-Button mit klaren Zuständen */
+.pf-fav-btn{
+  display:inline-flex; align-items:center; gap:.4rem;
+  padding:.35rem .75rem; font-size:.9rem; font-weight:600;
+  border-radius:999px; border:1px solid var(--pf-border);
+  background:var(--pf-bg-soft); color:var(--pf-text); cursor:pointer;
+  transition:all .15s ease;
+}
+.pf-fav-btn .pf-fav-ico{ font-size:1rem; line-height:1; color:var(--pf-text-dim); }
+
+/* Hover: dezent, Text bleibt lesbar */
+.pf-fav-btn:hover{
+  background:color-mix(in srgb, var(--pf-accent) 12%, var(--pf-bg-soft));
+  border-color:var(--pf-accent);
+  color:var(--pf-text);
+}
+.pf-fav-btn:hover .pf-fav-ico{ color:var(--pf-accent); }
+
+/* Saved: voller Accent-Hintergrund + weiße Schrift */
+.pf-fav-btn.is-on{
+  border-color:var(--pf-accent);
+  background:var(--pf-accent);
+  color:#fff;
+}
+.pf-fav-btn.is-on .pf-fav-ico{ color:#fff; }
+.pf-fav-btn.is-on:hover{ filter:brightness(1.05); }
+
+/* kleine Pop-Animation bei Save */
+@keyframes pf-fav-pop{ 0%{transform:scale(.92)} 55%{transform:scale(1.08)} 100%{transform:scale(1)} }
+.pf-fav-pop{ animation: pf-fav-pop .28s ease; }
+
+/* =========================================================
+   PF Workflows – Gating / Locks (additiv, non-breaking)
+   ========================================================= */
+
+/* 1) Basis: Locked-State markiert Step & verhindert Interaktionen unter dem Overlay */
+.pf-step.is-locked,
+.pf-step-card.is-locked{
+  position: relative; /* für Overlay-Positionierung */
+  overflow: hidden;   /* saubere Kanten */
+}
+
+/* leichte Entsättigung darunterliegenden Inhalts */
+.pf-step.is-locked > *:not(.pf-gate-overlay),
+.pf-step-card.is-locked > *:not(.pf-gate-overlay){
+  filter: saturate(.6) brightness(.92);
+}
+
+/* 2) Overlay: halbtransparent + leichter Blur */
+.pf-step.is-locked .pf-gate-overlay,
+.pf-step-card.is-locked .pf-gate-overlay{
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(10,12,16,.55);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  pointer-events: auto; /* fängt Klicks */
+  z-index: 2;
+}
+
+/* 3) Lock-Card */
+.pf-gate-card{
+  width: min(92%, 520px);
+  border-radius: 14px;
+  background: #0f1218;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow: 0 10px 28px rgba(0,0,0,.28);
+  padding: 16px 18px;
+  text-align: center;
+}
+
+/* Eyebrow + Title */
+.pf-gate-eyebrow{
+  font-size: .8rem;
+  opacity: .75;
+  margin-bottom: .25rem;
+}
+.pf-gate-title{
+  font-weight: 800;
+  font-size: 1.05rem;
+  line-height: 1.2;
+  margin-bottom: .75rem;
+}
+
+/* CTA-Gruppe */
+.pf-gate-actions{
+  display: flex;
+  gap: .5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* 4) Buttons im Overlay – an euren Button-Stil angelehnt, aber eigenständig */
+.pf-gate-btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  padding: .6rem .9rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.22);
+  background: rgba(255,255,255,.06);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  line-height: 1;
+  transition: filter .18s ease, transform .12s ease;
+}
+.pf-gate-btn:hover{ filter: brightness(1.05); transform: translateY(-1px); }
+
+/* Primär-CTA (Login/Upgrade) – nutzt Accent-Farbe aus dem Designsystem falls vorhanden */
+.pf-gate-btn--primary{
+  background: var(--pf-accent, #58e0ff);
+  border-color: var(--pf-accent, #58e0ff);
+  color: #081119;
+}
+
+/* 5) Login vs. Pro – dezente farbliche Spitze am Kartenrand */
+.pf-step.is-locked.pf-lock--login .pf-gate-card,
+.pf-step-card.is-locked.pf-lock--login .pf-gate-card{
+  box-shadow: 0 10px 28px rgba(0,0,0,.28), inset 0 0 0 2px rgba(88,224,255,.25);
+}
+.pf-step.is-locked.pf-lock--pro .pf-gate-card,
+.pf-step-card.is-locked.pf-lock--pro .pf-gate-card{
+  box-shadow: 0 10px 28px rgba(0,0,0,.28), inset 0 0 0 2px rgba(250,204,21,.22);
+}
+
+/* 6) Interactions unter dem Overlay deaktivieren (nur wenn locked) */
+.pf-step.is-locked > :not(.pf-gate-overlay) a,
+.pf-step.is-locked > :not(.pf-gate-overlay) button,
+.pf-step-card.is-locked > :not(.pf-gate-overlay) a,
+.pf-step-card.is-locked > :not(.pf-gate-overlay) button{
+  pointer-events: none !important;
+}
+
+/* 7) Responsive Feinschliff */
+@media (max-width: 560px){
+  .pf-gate-card{ padding: 14px 14px; }
+  .pf-gate-actions{ gap: .4rem; }
+  .pf-gate-btn{ width: 100%; }
+}
+
+/* 8) Optional: Badge-Hinweis am Step-Titel (falls gewünscht) 
+   – nur visual, keine DOM-Änderung nötig. Auskommentiert lassen, falls nicht gewünscht.
+*/
+/*
+.pf-step.is-locked .pf-step-title::after,
+.pf-step-card.is-locked .pf-step-title::after{
+  content: "🔒";
+  font-size: .95rem;
+  opacity: .85;
+  margin-left: .35rem;
+}
+*/
+
+.pf-step { position: relative; }
+.pf-step .pf-blur { filter: blur(3px); pointer-events: none; }
+.pf-step-lock{
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(250,250,252,.65);
+  backdrop-filter: blur(2px);
+  border-radius:16px;
+  z-index: 2;
+}
+.pf-step-lock__inner{
+  text-align:center;
+  padding:1rem 1.25rem;
+  background:#fff;
+  border:1px solid var(--pf-border, #e5e7eb);
+  border-radius:12px;
+  box-shadow:0 6px 22px rgba(0,0,0,.08);
+}
+.pf-lock-text{ margin:0 0 .75rem; color:var(--pf-text, #111827); }
+
+
+/* Mode-Badge unter dem Titel */
+.pf-modebadge{
+  display:flex; align-items:center; gap:.5rem;
+  padding:.6rem .8rem; border:1px solid var(--pf-border, #e5e7eb);
+  border-radius:12px; background:#fff; margin:.5rem 0 1rem;
+  line-height:1.2;
+}
+.pf-modebadge__label{
+  font-weight:700;
+  padding:.2rem .55rem; border-radius:999px;
+  background:var(--pf-chip-bg, #f3f4f6); border:1px solid var(--pf-border, #e5e7eb);
+  text-transform:uppercase; font-size:.75rem; letter-spacing:.02em;
+}
+.pf-modebadge__sub{ color:var(--pf-text-dim, #6b7280); font-size:.9rem; }
+
+/* Farbvarianten nach Modus */
+.pf-modebadge[data-mode="free"]      .pf-modebadge__label{ background:#ecfdf5; border-color:#a7f3d0; }
+.pf-modebadge[data-mode="half_locked"] .pf-modebadge__label{ background:#fff7ed; border-color:#fed7aa; }
+.pf-modebadge[data-mode="pro"]       .pf-modebadge__label{ background:#eef2ff; border-color:#c7d2fe; }
+
+/* Kleine Chips (z. B. "Locked" am Step) */
+.pf-chip{
+  display:inline-flex; align-items:center; gap:.35rem;
+  padding:.2rem .5rem; border:1px solid var(--pf-border, #e5e7eb);
+  border-radius:999px; font-size:.75rem; font-weight:600;
+  background:#fff;
+}
+.pf-chip--lock{ background:#fff1f2; border-color:#fecdd3; }
+
+/* Optional: Legende */
+.pf-modelegend{ margin:.25rem 0 1rem; }
+.pf-modelegend > summary{ cursor:pointer; font-weight:600; }
+.pf-modelegend ul{ margin:.5rem 0 0 1rem; color:var(--pf-text-dim, #6b7280); }
+
+/* Grid-Items im Header nicht horizontal strecken */
+.pf-header{
+  justify-items: start; /* statt default stretch */
+}
+
+/* Headbar unter der H1: links Badge/Legend, rechts Save */
+.pf-headbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:.25rem 0 .5rem;
+}
+.pf-headbar-left{
+  display:flex;
+  align-items:center;
+  gap:.6rem .8rem;
+  flex-wrap:wrap;
+}
+.pf-headbar-right{ flex:0 0 auto; }
+
+/* Badge & Legend kompakt halten (kein Full-Width) */
+.pf-modebadge,
+.pf-gating-legend{
+  display:inline-flex;
+  width:auto !important;
+  max-width:100%;
+  justify-self:start;
+  align-self:start;
+}
+
+/* Falls Grid-Header streckt: verhindern */
+.pf-header{ justify-items:start; }
+
+/* (bereits vorhanden, zur Sicherheit wiederholt) */
+.pf-gating-legend{ gap:.5rem; flex-wrap:wrap; align-items:center; }
+.pf-gate-chip{ flex:0 0 auto; }
+.pf-gate-chip[aria-current="true"]{
+  outline: 2px solid color-mix(in srgb, var(--pf-accent) 45%, transparent);
+  outline-offset: 2px; font-weight: 800;
+}
+

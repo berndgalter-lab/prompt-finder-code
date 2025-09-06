@@ -1,0 +1,50 @@
+/* ==== Globale Design Tokens (einmalig) ==== */
+:root{
+  /* Surfaces & Layout (Dark default) */
+  --pf-bg: #0b0c10;
+  --pf-bg-soft: #111217;
+  --pf-surface-soft: #0e1015;      /* NEU: sehr dezente Flächen */
+  --pf-card: #0f1116;
+  --pf-border: #1f2430;
+  --pf-wrap: 1100px;
+  --pf-radius: 14px;
+  --pf-space: 72px;
+
+  /* Text */
+  --pf-text: #e9ecf1;
+  --pf-text-dim: #b8c0cc;
+
+  /* Brand / Accents (Creative Purple) */
+  --pf-accent: #8b5cf6;            /* Primary */
+  --pf-accent-secondary: #c084fc;  /* NEU: Hover/Pills */
+  /* optional: Legacy alias falls irgendwo genutzt */
+  --pf-accent-2: var(--pf-accent-secondary);
+
+  /* Feedback */
+  --pf-success: #22c55e;
+  --pf-error: #ef4444;
+  --pf-warning: #facc15;
+}
+
+/* Optional global dark backdrop */
+body{ background:#0a0b0f; color:var(--pf-text); }
+
+/* Light-Mode Token-Anpassung */
+@media (prefers-color-scheme: light){
+  :root{
+    --pf-bg: #f7f9fc;
+    --pf-bg-soft: #ffffff;
+    --pf-surface-soft: #fafafa;    /* NEU: hellere Soft-Fläche */
+    --pf-card: #ffffff;
+    --pf-border: #e5e7eb;
+
+    --pf-text: #1e1b4b;
+    --pf-text-dim: #6b7280;
+
+    /* Accents bleiben Purple, leicht heller wirkt gut auf Weiß */
+    --pf-accent: #8b5cf6;
+    --pf-accent-secondary: #c084fc;
+    --pf-accent-2: var(--pf-accent-secondary);
+  }
+  body{ background:#ffffff; }
+}

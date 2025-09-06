@@ -1,0 +1,171 @@
+/* ===================================================================
+   Prompt Finder – Pricing (clean modern SaaS)
+   Scope: .pf-pricing
+   =================================================================== */
+
+/* --- Safety / Resets inside section --- */
+.entry-content .pf-pricing,
+.entry-content .pf-pricing * { box-sizing: border-box; }
+.pf-pricing h1, .pf-pricing h2, .pf-pricing h3,
+.pf-pricing p, .pf-pricing ul, .pf-pricing li { margin:0; }
+
+/* --- Tokens (fallbacks if core not loaded) --- */
+.pf-pricing{
+  --pf-wrap: var(--pf-wrap, 1100px);
+  --pf-space: var(--pf-space, 72px);
+  --pf-text: var(--pf-text, #e9ecf1);
+  --pf-text-dim: var(--pf-text-dim, #b8c0cc);
+  --pf-border: var(--pf-border, #1f2430);
+  --pf-card: var(--pf-card, #0f1116);
+  --pf-bg-soft: var(--pf-bg-soft, #0e141f);
+  --pf-accent: var(--pf-accent, #6ee7ff);
+  --pf-accent-2: var(--pf-accent-2, #8b5cf6);
+  --pf-radius: var(--pf-radius, 14px);
+}
+
+/* --- Section container --- */
+.pf-pricing{ padding: var(--pf-space) 0; color: var(--pf-text); }
+.pf-pricing .pf-wrap{ max-width: var(--pf-wrap); margin:0 auto; padding:0 20px; }
+
+/* --- Headline --- */
+.pf-pricing-head{ text-align:center; margin-bottom: 22px; }
+.pf-pricing h1{
+  font-size: clamp(2.1rem, 5.5vw, 3rem);
+  letter-spacing:-.02em; line-height:1.08; margin-bottom:.35rem;
+}
+.pf-pricing .pf-sub{ color: var(--pf-text-dim); max-width:780px; margin:0 auto; }
+
+/* --- Billing toggle (centered pill rail) --- */
+.pf-billing-toggle{
+  width:min(720px, 100%);
+  margin: 16px auto 6px;
+  padding:6px;
+  display:flex; gap:8px; justify-content:center; align-items:center;
+  border:1px solid var(--pf-border); border-radius:999px;
+  background:linear-gradient(180deg,#0e141f,#0b0f17);
+}
+.pf-toggle-btn{
+  appearance:none; border:0; cursor:pointer;
+  padding:.55rem 1rem; border-radius:999px; font-weight:700;
+  color:var(--pf-text-dim); background:transparent; line-height:1;
+}
+.pf-toggle-btn.is-active{
+  color:#081119;
+  background:linear-gradient(180deg,#58e0ff,#5db9ff 35%, var(--pf-accent-2));
+  box-shadow:0 6px 18px rgba(93,185,255,.25), 0 2px 0 rgba(8,17,25,.35) inset;
+}
+.pf-toggle-btn .pf-save{
+  font-size:.75rem; font-weight:800; letter-spacing:.03em;
+  margin-left:.45rem; padding:.15rem .5rem; border-radius:999px;
+  background:#0e1119; color:#cbe7ff; border:1px solid #203045;
+}
+
+/* -------------------------------------------------------------------
+   Plans row – one clean row on desktop (equal heights)
+   ------------------------------------------------------------------- */
+.pf-plans{
+  display:flex; gap:18px; align-items:stretch;       /* equal height */
+  justify-content:space-between; flex-wrap:nowrap;   /* one row */
+  margin-top: 18px;
+}
+/* Cards (equal width) */
+.pf-plan{
+  flex:1 1 0;
+  position:relative;
+  display:flex; flex-direction:column; min-width:0;
+  background:var(--pf-card); border:1px solid var(--pf-border);
+  border-radius:var(--pf-radius); overflow:hidden;
+  transition:.18s ease transform, .18s ease box-shadow, .18s ease border-color;
+}
+.pf-plan:hover{ transform:translateY(-2px); box-shadow:0 16px 30px rgba(0,0,0,.28); border-color:#2b3447; }
+
+/* Keep inner layout tidy */
+.pf-plan-body{ padding:18px; display:flex; flex-direction:column; gap:10px; flex:1; }
+.pf-plan-title{ margin:.1rem 0; font-size:1.12rem; }
+.pf-plan-desc{ color:var(--pf-text-dim); line-height:1.55; margin:0 0 .3rem; }
+
+/* Pro highlight (optional) */
+.pf-plan.is-popular{ border-color:#2b3447; }
+.pf-plan.is-popular:hover{ transform:translateY(-3px); }
+
+/* Popular badge (overlay, top-right) */
+.pf-plan .pf-badge{
+  position:absolute; top:12px; right:12px; z-index:2;
+  font-size:.75rem; font-weight:800; letter-spacing:.04em;
+  padding:.25rem .55rem; border-radius:999px;
+  background:linear-gradient(180deg,#58e0ff,#8b5cf6);
+  color:#081119; border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 4px 12px rgba(93,185,255,.25);
+}
+
+/* Price row */
+.pf-price{ display:flex; align-items:baseline; gap:.55rem; margin:.15rem 0 .25rem; }
+.pf-amount{ font-size: clamp(1.7rem, 3.6vw, 2.2rem); font-weight:800; letter-spacing:-.02em; }
+.pf-per{ color:var(--pf-text-dim); }
+
+/* Feature list (green bead like landing) */
+.pf-features{ list-style:none; padding:0; margin:.4rem 0 0; display:grid; gap:.5rem; }
+.pf-features li{ display:flex; align-items:center; gap:.55rem; color:var(--pf-text); }
+.pf-features .dot{
+  width:10px; height:10px; border-radius:999px; display:inline-block;
+  background:linear-gradient(180deg,#34d399,#10b981);
+  box-shadow:0 0 0 2px rgba(16,185,129,.15);
+}
+
+/* CTA row sticks to bottom */
+.pf-cta-row{
+  margin-top:auto; display:flex; gap:10px; flex-wrap:wrap;
+  padding:16px 18px 18px; border-top:1px solid var(--pf-border);
+}
+/* Button safety if pf-core not present */
+.pf-btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
+  padding:.85rem 1rem; border-radius:12px; border:1px solid var(--pf-border);
+  font-weight:700; text-decoration:none; line-height:1; cursor:pointer;
+}
+.pf-btn--primary{
+  background:linear-gradient(180deg,#58e0ff,#5db9ff 35%, var(--pf-accent-2));
+  color:#081119; border-color:transparent;
+  box-shadow:0 8px 22px rgba(93,185,255,.25), 0 2px 0 rgba(8,17,25,.35) inset;
+}
+.pf-btn--primary:hover{ transform:translateY(-1px) scale(1.01); }
+.pf-btn--ghost{ background:transparent; color:var(--pf-text); }
+.pf-btn--ghost:hover{ background:#0e1119; border-color:#2a3140; }
+
+/* Order: Free left, Pro center, Business right (no HTML change) */
+.pf-plan[aria-label="Free plan"]     { order:1; }
+.pf-plan[aria-label="Pro plan"]      { order:2; }
+.pf-plan[aria-label="Business plan"] { order:3; }
+
+/* Responsive: 2 cols > 680–980px, 1 col < 680px */
+@media (max-width: 980px){
+  .pf-plans{ flex-wrap:wrap; }
+  .pf-plan{ flex:1 1 calc(50% - 9px); }
+}
+@media (max-width: 680px){
+  .pf-plan{ flex:1 1 100%; }
+}
+
+/* Footnote + proof + FAQ */
+.pf-proof{ margin-top:18px; }
+.pf-foot{ color:var(--pf-text-dim); text-align:center; margin-top:16px; }
+.pf-faq{ margin-top:30px; }
+.pf-faq h2{ font-size: clamp(1.3rem, 2.6vw, 1.6rem); margin:0 0 .6rem; }
+.pf-faq details{
+  background:var(--pf-card); border:1px solid var(--pf-border);
+  border-radius:12px; padding:.9rem 1rem; margin:.5rem 0;
+}
+.pf-faq summary{ cursor:pointer; font-weight:700; }
+.pf-faq p{ color:var(--pf-text-dim); margin:.45rem 0 0; }
+
+/* Billing visibility (driven by JS) */
+.pf-pricing [data-annual], .pf-pricing [data-monthly]{ display:none; }
+.pf-pricing[data-billing="monthly"] [data-monthly]{ display:inline; }
+.pf-pricing[data-billing="annual"]  [data-annual]{ display:inline; }
+
+/* Light‑mode polish */
+@media (prefers-color-scheme: light){
+  .pf-plan{ background:#fff; border-color:#e6eaf0; box-shadow:0 8px 24px rgba(2,12,27,.06); }
+  .pf-plan:hover{ box-shadow:0 14px 34px rgba(2,12,27,.08); }
+  .pf-billing-toggle{ background:#fff; border-color:#e6eaf0; }
+}

@@ -258,13 +258,6 @@ $show_legend = !empty($PF_FLAGS['mode_legend']) || !empty($PF_FLAGS['gating']);
       <?php endif; ?>
     </div>
 
-    <?php if ($show_legend): ?>
-      <div class="pf-gating-legend" data-mode="<?php echo esc_attr($ACCESS_MODE); ?>">
-        <span class="pf-gate-chip pf-gate-free" <?php echo $ACCESS_MODE==='free' ? 'aria-current="true"' : '' ?>>Free</span>
-        <span class="pf-gate-chip pf-gate-half" <?php echo $ACCESS_MODE==='half_locked' ? 'aria-current="true"' : '' ?>>Limited</span>
-        <span class="pf-gate-chip pf-gate-pro"  <?php echo $ACCESS_MODE==='pro' ? 'aria-current="true"' : '' ?>>Pro</span>
-      </div>
-    <?php endif; ?>
   </div>
 
   <div class="pf-headbar-right">
@@ -574,7 +567,9 @@ $show_legend = !empty($PF_FLAGS['mode_legend']) || !empty($PF_FLAGS['gating']);
                 if (!$label && $name) {
                   $label = ucwords(str_replace(['_','-'], ' ', $name));
                 }
-                $placeholder = $desc;
+                
+                // Use example value as placeholder if available, otherwise use a generic placeholder
+                $placeholder = $exampleV ?: 'Enter ' . strtolower($label ?: 'value');
               ?>
                 <label class="pf-var <?php echo $required ? 'is-required' : ''; ?>">
                   <span class="pf-var-label">
@@ -610,6 +605,7 @@ $show_legend = !empty($PF_FLAGS['mode_legend']) || !empty($PF_FLAGS['gating']);
                     class="pf-prompt"
                     data-prompt-template
                     data-base="<?php echo esc_attr($enhanced_prompt); ?>"
+                    data-original-base="<?php echo esc_attr($prompt); ?>"
                     rows="8"
                     spellcheck="false"><?php echo esc_html($enhanced_prompt); ?></textarea>
 

@@ -1,3 +1,12 @@
+/*
+Theme Name: Prompt Finder
+Description: A WordPress theme for Prompt Finder workflows and content management
+Version: 1.0.0
+Author: Prompt Finder Team
+Template: generatepress
+Text Domain: prompt-finder
+*/
+
 /* ============================================================
    Prompt Finder – Global Design Tokens
    Centralized design system for consistent styling across all components
@@ -160,6 +169,59 @@ body {
 .pf-focus-visible:focus-visible {
   outline: 2px solid var(--pf-accent);
   outline-offset: 2px;
+}
+
+/* ============================================================
+   Layout Primitives (from pf-core.css)
+   ============================================================ */
+.pf-wrap { 
+  max-width: var(--pf-wrap); 
+  margin: 0 auto; 
+  padding: 0 1.25rem; 
+}
+
+.pf-section { 
+  padding: var(--pf-space) 0; 
+  border-top: 1px solid var(--pf-border); 
+}
+
+.pf-section:first-of-type { 
+  border-top: none; 
+}
+
+/* ============================================================
+   Button System (from pf-core.css)
+   ============================================================ */
+.pf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.1rem;
+  border-radius: 12px;
+  border: 1px solid var(--pf-border);
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.18s ease;
+  line-height: 1;
+  cursor: pointer;
+}
+
+a.pf-btn,
+a.pf-btn:visited {
+  text-decoration: none !important;
+}
+
+.pf-btn--primary {
+  background: var(--pf-accent-primary);
+  color: white;
+  border-color: var(--pf-accent-primary);
+}
+
+.pf-btn--primary:hover {
+  background: var(--pf-accent-primary);
+  opacity: 0.9;
+  transform: translateY(-1px);
 }
 
 /* ============================================================

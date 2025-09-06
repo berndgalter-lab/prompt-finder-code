@@ -140,24 +140,21 @@
     try {
       const re = /\{([^}]+)\}/g;
       $$('[data-prompt-template]', container).forEach((ta) => {
-        // Use enhanced base (with context) if available, otherwise use original base
         const base = ta.getAttribute('data-base') || '';
-        const originalBase = ta.getAttribute('data-original-base') || base;
         
-        // First render the original template with variables
-        let rendered = originalBase.replace(re, (m, key) => {
+        console.log('[PF] Rendering prompt with base:', base.substring(0, 100) + '...');
+        console.log('[PF] Available variables:', Object.keys(VARS));
+        
+        // Simple approach: just replace variables in the current base template
+        const out = base.replace(re, (m, key) => {
           const k = normKey(key);
           const val = Object.prototype.hasOwnProperty.call(VARS, k) ? VARS[k] : '';
+          console.log('[PF] Replacing', m, 'with', val || '(empty)');
           return val ? val : m;
         });
         
-        // If we have context injection, append it
-        if (base !== originalBase) {
-          const contextPart = base.replace(originalBase, '');
-          rendered = rendered + contextPart;
-        }
-        
-        ta.value = rendered;
+        ta.value = out;
+        console.log('[PF] Final rendered prompt:', out.substring(0, 100) + '...');
       });
     } catch (e) {
       logError('renderPrompts', e);
@@ -522,6 +519,10 @@ function initFillExamples() {
 
         // Update store immediately
         VARS[key] = inp.value;
+        
+        // Debug log
+        console.log('[PF] Variable updated:', key, '=', inp.value);
+        console.log('[PF] Current VARS store:', VARS);
 
         // Re-render ALL prompts so later steps update in real time
         renderPrompts(document);

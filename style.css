@@ -306,8 +306,9 @@ a.pf-btn:visited {
 .pf-nav-toggle-line {
   width: 100%;
   height: 2px;
-  background: currentColor;
+  background: #333333;
   transition: var(--pf-transition-fast);
+  border-radius: 1px;
 }
 
 /* Mobile Navigation */

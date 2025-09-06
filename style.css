@@ -1,50 +1,172 @@
-/* ==== Globale Design Tokens (einmalig) ==== */
-:root{
-  /* Surfaces & Layout (Dark default) */
-  --pf-bg: #0b0c10;
-  --pf-bg-soft: #111217;
-  --pf-surface-soft: #0e1015;      /* NEU: sehr dezente Flächen */
-  --pf-card: #0f1116;
-  --pf-border: #1f2430;
+/* ============================================================
+   Prompt Finder – Global Design Tokens
+   Centralized design system for consistent styling across all components
+   ============================================================ */
+
+:root {
+  /* ============================================================
+     Layout & Spacing
+     ============================================================ */
   --pf-wrap: 1100px;
   --pf-radius: 14px;
   --pf-space: 72px;
+  --pf-space-sm: 24px;
+  --pf-space-md: 48px;
+  --pf-space-lg: 72px;
+  --pf-space-xl: 96px;
 
-  /* Text */
+  /* ============================================================
+     Surfaces & Backgrounds (Dark Mode Default)
+     ============================================================ */
+  --pf-bg: #0b0c10;
+  --pf-bg-soft: #111217;
+  --pf-surface-soft: #0e1015;
+  --pf-card: #0f1116;
+  --pf-border: #1f2430;
+  --pf-border-light: #2a2f3a;
+
+  /* ============================================================
+     Typography
+     ============================================================ */
   --pf-text: #e9ecf1;
   --pf-text-dim: #b8c0cc;
+  --pf-text-muted: #8b95a1;
+  --pf-text-inverse: #0b0c10;
 
-  /* Brand / Accents (Creative Purple) */
-  --pf-accent: #8b5cf6;            /* Primary */
-  --pf-accent-secondary: #c084fc;  /* NEU: Hover/Pills */
-  /* optional: Legacy alias falls irgendwo genutzt */
+  /* ============================================================
+     Brand Colors (Creative Purple Theme)
+     ============================================================ */
+  --pf-accent: #8b5cf6;
+  --pf-accent-secondary: #c084fc;
+  --pf-accent-hover: #7c3aed;
+  --pf-accent-light: #e9d5ff;
+  --pf-accent-dark: #6d28d9;
+  
+  /* Legacy alias for backward compatibility */
   --pf-accent-2: var(--pf-accent-secondary);
 
-  /* Feedback */
+  /* ============================================================
+     Status & Feedback Colors
+     ============================================================ */
   --pf-success: #22c55e;
+  --pf-success-light: #dcfce7;
+  --pf-success-dark: #16a34a;
+  
   --pf-error: #ef4444;
+  --pf-error-light: #fef2f2;
+  --pf-error-dark: #dc2626;
+  
   --pf-warning: #facc15;
+  --pf-warning-light: #fefce8;
+  --pf-warning-dark: #eab308;
+  
+  --pf-info: #3b82f6;
+  --pf-info-light: #dbeafe;
+  --pf-info-dark: #2563eb;
+
+  /* ============================================================
+     Interactive States
+     ============================================================ */
+  --pf-hover-overlay: rgba(139, 92, 246, 0.1);
+  --pf-active-overlay: rgba(139, 92, 246, 0.2);
+  --pf-focus-ring: 0 0 0 3px rgba(139, 92, 246, 0.3);
+  
+  /* ============================================================
+     Shadows & Effects
+     ============================================================ */
+  --pf-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --pf-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --pf-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --pf-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  
+  /* ============================================================
+     Transitions & Animations
+     ============================================================ */
+  --pf-transition-fast: 150ms ease-in-out;
+  --pf-transition-normal: 250ms ease-in-out;
+  --pf-transition-slow: 350ms ease-in-out;
 }
 
-/* Optional global dark backdrop */
-body{ background:#0a0b0f; color:var(--pf-text); }
+/* ============================================================
+   Global Base Styles
+   ============================================================ */
+body {
+  background: #0a0b0f;
+  color: var(--pf-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
-/* Light-Mode Token-Anpassung */
-@media (prefers-color-scheme: light){
-  :root{
+/* ============================================================
+   Light Mode Overrides
+   ============================================================ */
+@media (prefers-color-scheme: light) {
+  :root {
+    /* Surfaces & Backgrounds */
     --pf-bg: #f7f9fc;
     --pf-bg-soft: #ffffff;
-    --pf-surface-soft: #fafafa;    /* NEU: hellere Soft-Fläche */
+    --pf-surface-soft: #fafafa;
     --pf-card: #ffffff;
     --pf-border: #e5e7eb;
+    --pf-border-light: #d1d5db;
 
+    /* Typography */
     --pf-text: #1e1b4b;
     --pf-text-dim: #6b7280;
+    --pf-text-muted: #9ca3af;
+    --pf-text-inverse: #ffffff;
 
-    /* Accents bleiben Purple, leicht heller wirkt gut auf Weiß */
+    /* Brand Colors (adjusted for light backgrounds) */
     --pf-accent: #8b5cf6;
     --pf-accent-secondary: #c084fc;
-    --pf-accent-2: var(--pf-accent-secondary);
+    --pf-accent-hover: #7c3aed;
+    --pf-accent-light: #f3e8ff;
+    --pf-accent-dark: #6d28d9;
+
+    /* Interactive States */
+    --pf-hover-overlay: rgba(139, 92, 246, 0.05);
+    --pf-active-overlay: rgba(139, 92, 246, 0.1);
+    --pf-focus-ring: 0 0 0 3px rgba(139, 92, 246, 0.2);
+
+    /* Shadows (adjusted for light mode) */
+    --pf-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --pf-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --pf-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --pf-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
   }
-  body{ background:#ffffff; }
+
+  body {
+    background: #ffffff;
+  }
 }
+
+/* ============================================================
+   Utility Classes
+   ============================================================ */
+.pf-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.pf-focus-visible:focus-visible {
+  outline: 2px solid var(--pf-accent);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   Responsive Breakpoints (for reference)
+   ============================================================ */
+/*
+  Mobile: < 768px
+  Tablet: 768px - 1024px
+  Desktop: > 1024px
+*/

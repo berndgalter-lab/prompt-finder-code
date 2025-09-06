@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Plugin Name: Prompt Finder Core
  * Plugin URI: https://github.com/berndgalter-lab/prompt-finder-code
@@ -9,11 +11,15 @@
  * License: GPL v2 or later
  * Text Domain: pf-core
  * Domain Path: /languages
+ * Requires at least: 5.0
+ * Tested up to: 6.4
+ * Requires PHP: 7.4
+ * Network: false
  */
 
 // Prevent direct access
 if (!defined('ABSPATH')) {
-    exit;
+    exit('Direct access denied.');
 }
 
 // Define plugin constants
@@ -46,14 +52,83 @@ class PromptFinderCore {
         add_action('pre_get_posts', array($this, 'enhance_workflow_search'));
     }
     
-    public function init() {
-        load_plugin_textdomain('pf-core', false, dirname(plugin_basename(__FILE__)) . '/languages');
+    public function init(): void {
+        // Load plugin textdomain for internationalization
+        load_plugin_textdomain(
+            'pf-core', 
+            false, 
+            dirname(plugin_basename(__FILE__)) . '/languages'
+        );
         
         // Register additional workflow meta fields
         $this->register_workflow_meta();
         
         // Add custom capabilities
         $this->add_custom_capabilities();
+        
+        // Register cron job for workflow analytics
+        add_action('pf_log_workflow_view', [$this, 'log_workflow_view']);
+        
+        // Register AJAX handlers for analytics
+        add_action('wp_ajax_pf_get_analytics', [$this, 'ajax_get_analytics']);
+        add_action('wp_ajax_pf_export_data', [$this, 'ajax_export_data']);
+    }
+    
+    /**
+     * Frontend enhancements
+     * 
+     * @since 1.0.0
+     * @return void
+     */
+    public function frontend_enhancements(): void {
+        try {
+            // Frontend enhancements can be added here
+            // Currently handled by theme functions.php
+            
+            // Example: Add custom CSS for admin users
+            if (is_user_logged_in() && current_user_can('manage_options')) {
+                wp_add_inline_style('pf-core', '
+                    .pf-debug { 
+                        border: 1px dashed #0073aa; 
+                        background: #f0f8ff; 
+                        padding: 10px; 
+                        margin: 10px 0; 
+                    }
+                ');
+            }
+        } catch (Exception $e) {
+            error_log('[PF Core] Frontend enhancements error: ' . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Enhance workflow content
+     * 
+     * @since 1.0.0
+     * @param string $content The content to enhance
+     * @return string Enhanced content
+     */
+    public function enhance_workflow_content(string $content): string {
+        try {
+            // Only enhance workflow post types
+            if (!is_singular('workflows')) {
+                return $content;
+            }
+            
+            // Add analytics tracking for workflow views
+            if (!is_admin()) {
+                $workflow_id = get_the_ID();
+                if ($workflow_id) {
+                    // Log workflow view (non-blocking)
+                    wp_schedule_single_event(time(), 'pf_log_workflow_view', [$workflow_id]);
+                }
+            }
+            
+            return $content;
+        } catch (Exception $e) {
+            error_log('[PF Core] Content enhancement error: ' . $e->getMessage());
+            return $content;
+        }
     }
     
     /**
@@ -107,16 +182,49 @@ class PromptFinderCore {
         );
     }
     
-    public function admin_scripts($hook) {
-        if (strpos($hook, 'pf-core') === false) return;
+    /**
+     * Enqueue admin scripts and styles
+     * 
+     * @since 1.0.0
+     * @param string $hook Current admin page hook
+     * @return void
+     */
+    public function admin_scripts(string $hook): void {
+        if (strpos($hook, 'pf-core') === false) {
+            return;
+        }
         
-        wp_enqueue_style('pf-core-admin', PF_CORE_PLUGIN_URL . 'admin/css/admin.css', array(), PF_CORE_VERSION);
-        wp_enqueue_script('pf-core-admin', PF_CORE_PLUGIN_URL . 'admin/js/admin.js', array('jquery'), PF_CORE_VERSION, true);
-        
-        wp_localize_script('pf-core-admin', 'PF_ADMIN', array(
-            'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('pf_admin_nonce')
-        ));
+        try {
+            // Enqueue admin styles
+            wp_enqueue_style(
+                'pf-core-admin', 
+                PF_CORE_PLUGIN_URL . 'admin/css/admin.css', 
+                [], 
+                PF_CORE_VERSION
+            );
+            
+            // Enqueue admin scripts
+            wp_enqueue_script(
+                'pf-core-admin', 
+                PF_CORE_PLUGIN_URL . 'admin/js/admin.js', 
+                ['jquery'], 
+                PF_CORE_VERSION, 
+                true
+            );
+            
+            // Localize script with security nonce
+            wp_localize_script('pf-core-admin', 'PF_ADMIN', [
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce' => wp_create_nonce('pf_admin_nonce'),
+                'strings' => [
+                    'confirm_delete' => __('Are you sure you want to delete this item?', 'pf-core'),
+                    'error_generic' => __('An error occurred. Please try again.', 'pf-core'),
+                    'success_saved' => __('Settings saved successfully.', 'pf-core'),
+                ]
+            ]);
+        } catch (Exception $e) {
+            error_log('[PF Core] Admin scripts error: ' . $e->getMessage());
+        }
     }
     
     /**
@@ -922,6 +1030,207 @@ add_action('wp_enqueue_scripts', function() {
         ));
     }
 });
+
+    /**
+     * Log workflow view for analytics
+     * 
+     * @since 1.0.0
+     * @param int $workflow_id Workflow post ID
+     * @return void
+     */
+    public function log_workflow_view(int $workflow_id): void {
+        try {
+            global $wpdb;
+            
+            $table = $wpdb->prefix . 'pf_workflow_usage';
+            $user_id = is_user_logged_in() ? get_current_user_id() : null;
+            $session_id = session_id() ?: wp_generate_password(32, false);
+            
+            $data = [
+                'workflow_id' => $workflow_id,
+                'user_id' => $user_id,
+                'session_id' => $session_id,
+                'ip_address' => $this->get_client_ip(),
+                'user_agent' => sanitize_text_field($_SERVER['HTTP_USER_AGENT'] ?? ''),
+                'step_completed' => 0,
+                'completed_at' => null,
+                'created_at' => current_time('mysql')
+            ];
+            
+            $wpdb->insert($table, $data);
+            
+            // Update usage count meta
+            $current_count = get_post_meta($workflow_id, 'pf_usage_count', true) ?: 0;
+            update_post_meta($workflow_id, 'pf_usage_count', $current_count + 1);
+            
+        } catch (Exception $e) {
+            error_log('[PF Core] Log workflow view error: ' . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Get client IP address with proxy support
+     * 
+     * @since 1.0.0
+     * @return string Client IP address
+     */
+    private function get_client_ip(): string {
+        $ip_keys = ['HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR'];
+        
+        foreach ($ip_keys as $key) {
+            if (!empty($_SERVER[$key])) {
+                $ip = sanitize_text_field($_SERVER[$key]);
+                
+                // Handle comma-separated IPs (from proxies)
+                if (strpos($ip, ',') !== false) {
+                    $ip = trim(explode(',', $ip)[0]);
+                }
+                
+                // Validate IP
+                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                    return $ip;
+                }
+            }
+        }
+        
+        return sanitize_text_field($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0');
+    }
+    
+    /**
+     * AJAX handler for analytics data
+     * 
+     * @since 1.0.0
+     * @return void
+     */
+    public function ajax_get_analytics(): void {
+        try {
+            // Security check
+            if (!wp_verify_nonce($_POST['nonce'] ?? '', 'pf_admin_nonce')) {
+                wp_send_json_error(['message' => __('Security check failed', 'pf-core')], 403);
+            }
+            
+            // Permission check
+            if (!current_user_can('manage_options')) {
+                wp_send_json_error(['message' => __('Insufficient permissions', 'pf-core')], 403);
+            }
+            
+            $analytics = $this->get_analytics_data();
+            wp_send_json_success($analytics);
+            
+        } catch (Exception $e) {
+            error_log('[PF Core] Analytics AJAX error: ' . $e->getMessage());
+            wp_send_json_error(['message' => __('An error occurred', 'pf-core')], 500);
+        }
+    }
+    
+    /**
+     * AJAX handler for data export
+     * 
+     * @since 1.0.0
+     * @return void
+     */
+    public function ajax_export_data(): void {
+        try {
+            // Security check
+            if (!wp_verify_nonce($_POST['nonce'] ?? '', 'pf_admin_nonce')) {
+                wp_send_json_error(['message' => __('Security check failed', 'pf-core')], 403);
+            }
+            
+            // Permission check
+            if (!current_user_can('manage_options')) {
+                wp_send_json_error(['message' => __('Insufficient permissions', 'pf-core')], 403);
+            }
+            
+            $export_data = $this->export_workflow_data();
+            wp_send_json_success($export_data);
+            
+        } catch (Exception $e) {
+            error_log('[PF Core] Export AJAX error: ' . $e->getMessage());
+            wp_send_json_error(['message' => __('Export failed', 'pf-core')], 500);
+        }
+    }
+    
+    /**
+     * Get analytics data
+     * 
+     * @since 1.0.0
+     * @return array Analytics data
+     */
+    private function get_analytics_data(): array {
+        global $wpdb;
+        
+        // Get workflow statistics
+        $workflow_count = wp_count_posts('workflows');
+        
+        // Get user statistics
+        $user_count = count_users();
+        
+        // Get rating statistics
+        $avg_rating = $wpdb->get_var("
+            SELECT AVG(rating_sum / rating_count) 
+            FROM (
+                SELECT 
+                    CAST(pm1.meta_value AS DECIMAL(10,2)) as rating_sum,
+                    CAST(pm2.meta_value AS DECIMAL(10,2)) as rating_count
+                FROM {$wpdb->postmeta} pm1 
+                INNER JOIN {$wpdb->postmeta} pm2 ON pm1.post_id = pm2.post_id 
+                INNER JOIN {$wpdb->posts} p ON pm1.post_id = p.ID
+                WHERE pm1.meta_key = 'pf_rating_sum' 
+                AND pm2.meta_key = 'pf_rating_count'
+                AND p.post_type = 'workflows'
+                AND pm2.meta_value > 0
+            ) as ratings
+        ");
+        
+        return [
+            'workflows' => [
+                'total' => $workflow_count->publish ?? 0,
+                'drafts' => $workflow_count->draft ?? 0,
+            ],
+            'users' => [
+                'total' => $user_count['total_users'] ?? 0,
+            ],
+            'ratings' => [
+                'average' => $avg_rating ? round($avg_rating, 1) : 0,
+            ],
+            'timestamp' => current_time('mysql'),
+        ];
+    }
+    
+    /**
+     * Export workflow data
+     * 
+     * @since 1.0.0
+     * @return array Export data
+     */
+    private function export_workflow_data(): array {
+        $workflows = get_posts([
+            'post_type' => 'workflows',
+            'posts_per_page' => -1,
+            'post_status' => 'publish'
+        ]);
+        
+        $export_data = [];
+        foreach ($workflows as $workflow) {
+            $export_data[] = [
+                'id' => $workflow->ID,
+                'title' => $workflow->post_title,
+                'slug' => $workflow->post_name,
+                'date' => $workflow->post_date,
+                'url' => get_permalink($workflow->ID),
+                'rating_sum' => get_post_meta($workflow->ID, 'pf_rating_sum', true),
+                'rating_count' => get_post_meta($workflow->ID, 'pf_rating_count', true),
+                'usage_count' => get_post_meta($workflow->ID, 'pf_usage_count', true),
+            ];
+        }
+        
+        return [
+            'workflows' => $export_data,
+            'exported_at' => current_time('mysql'),
+            'total_count' => count($export_data),
+        ];
+    }
+}
 
 // Initialize the plugin
 new PromptFinderCore();

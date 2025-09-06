@@ -96,7 +96,7 @@ function pf_enqueue_asset(string $handle, string $src, array $deps = [], string 
     $file_path = get_stylesheet_directory() . str_replace(get_stylesheet_directory_uri(), '', $src);
     
     if (file_exists($file_path)) {
-        $version = wp_get_environment_type() === 'production' 
+        $version = (function_exists('wp_get_environment_type') && (function_exists('wp_get_environment_type') && wp_get_environment_type() === 'production')) 
             ? wp_get_theme()->get('Version') 
             : filemtime($file_path);
             
@@ -171,7 +171,7 @@ add_action('wp_enqueue_scripts', function () {
     // Core (immer) - mit Caching für bessere Performance
     $core = $base . '/assets/css/pf-core.css';
     if (file_exists($core)) {
-        $version = wp_get_environment_type() === 'production' 
+        $version = (function_exists('wp_get_environment_type') && wp_get_environment_type() === 'production') 
             ? wp_get_theme()->get('Version') 
             : filemtime($core);
         wp_enqueue_style('pf-core', $uri . '/assets/css/pf-core.css', ['pf-child'], $version);
@@ -181,7 +181,7 @@ add_action('wp_enqueue_scripts', function () {
     if (is_front_page()) {
         $f = $base . '/assets/css/pf-landing.css';
         if (file_exists($f)) {
-            $version = wp_get_environment_type() === 'production' 
+            $version = (function_exists('wp_get_environment_type') && wp_get_environment_type() === 'production') 
                 ? wp_get_theme()->get('Version') 
                 : filemtime($f);
             wp_enqueue_style('pf-landing', $uri . '/assets/css/pf-landing.css', ['pf-core'], $version);
@@ -192,7 +192,7 @@ add_action('wp_enqueue_scripts', function () {
     if (is_singular('workflows') || is_post_type_archive('workflows') || is_tax(['workflow_category','workflow_tag'])) {
         $f = $base . '/assets/css/pf-workflows.css';
         if (file_exists($f)) {
-            $version = wp_get_environment_type() === 'production' 
+            $version = (function_exists('wp_get_environment_type') && wp_get_environment_type() === 'production') 
                 ? wp_get_theme()->get('Version') 
                 : filemtime($f);
             wp_enqueue_style('pf-workflows', $uri . '/assets/css/pf-workflows.css', ['pf-core'], $version);
@@ -200,7 +200,7 @@ add_action('wp_enqueue_scripts', function () {
 
         $js = $base . '/assets/js/pf-workflows.js';
         if (file_exists($js)) {
-            $js_version = wp_get_environment_type() === 'production' 
+            $js_version = (function_exists('wp_get_environment_type') && wp_get_environment_type() === 'production') 
                 ? wp_get_theme()->get('Version') 
                 : filemtime($js);
             wp_enqueue_script('pf-workflows-js', $uri . '/assets/js/pf-workflows.js', [], $js_version, true);
@@ -222,7 +222,7 @@ add_action('wp_enqueue_scripts', function () {
     if (is_home() || is_singular('post') || is_category() || is_tag() || is_date() || is_author()) {
         $f = $base . '/assets/css/pf-blog.css';
         if (file_exists($f)) {
-            $version = wp_get_environment_type() === 'production' 
+            $version = (function_exists('wp_get_environment_type') && wp_get_environment_type() === 'production') 
                 ? wp_get_theme()->get('Version') 
                 : filemtime($f);
             wp_enqueue_style('pf-blog', $uri . '/assets/css/pf-blog.css', ['pf-core'], $version);
@@ -246,7 +246,7 @@ add_action('enqueue_block_editor_assets', function(){
     // Core
     $core = $base . '/assets/css/pf-core.css';
     if (file_exists($core)) {
-        $version = wp_get_environment_type() === 'production' 
+        $version = (function_exists('wp_get_environment_type') && wp_get_environment_type() === 'production') 
             ? wp_get_theme()->get('Version') 
             : filemtime($core);
         wp_enqueue_style('pf-core-editor', $uri . '/assets/css/pf-core.css', [], $version);
@@ -256,7 +256,7 @@ add_action('enqueue_block_editor_assets', function(){
     if ($screen->post_type === 'page') {
         $f = $base . '/assets/css/pf-landing.css';
         if (file_exists($f)) {
-            $version = wp_get_environment_type() === 'production' 
+            $version = (function_exists('wp_get_environment_type') && wp_get_environment_type() === 'production') 
                 ? wp_get_theme()->get('Version') 
                 : filemtime($f);
             wp_enqueue_style('pf-landing-editor', $uri . '/assets/css/pf-landing.css', ['pf-core-editor'], $version);
@@ -267,7 +267,7 @@ add_action('enqueue_block_editor_assets', function(){
     if ($screen->post_type === 'workflows') {
         $f = $base . '/assets/css/pf-workflows.css';
         if (file_exists($f)) {
-            $version = wp_get_environment_type() === 'production' 
+            $version = (function_exists('wp_get_environment_type') && wp_get_environment_type() === 'production') 
                 ? wp_get_theme()->get('Version') 
                 : filemtime($f);
             wp_enqueue_style('pf-workflows-editor', $uri . '/assets/css/pf-workflows.css', ['pf-core-editor'], $version);
@@ -278,7 +278,7 @@ add_action('enqueue_block_editor_assets', function(){
     if ($screen->post_type === 'post') {
         $f = $base . '/assets/css/pf-blog.css';
         if (file_exists($f)) {
-            $version = wp_get_environment_type() === 'production' 
+            $version = (function_exists('wp_get_environment_type') && wp_get_environment_type() === 'production') 
                 ? wp_get_theme()->get('Version') 
                 : filemtime($f);
             wp_enqueue_style('pf-blog-editor', $uri . '/assets/css/pf-blog.css', ['pf-core-editor'], $version);
@@ -392,7 +392,7 @@ add_action('wp_enqueue_scripts', function () {
 
     $core_css = $base_dir . '/assets/css/pf-core.css';
     if (file_exists($core_css)) {
-        $version = wp_get_environment_type() === 'production' 
+        $version = (function_exists('wp_get_environment_type') && wp_get_environment_type() === 'production') 
             ? wp_get_theme()->get('Version') 
             : filemtime($core_css);
         wp_enqueue_style('pf-core', $base_uri . '/assets/css/pf-core.css', [], $version);
@@ -400,7 +400,7 @@ add_action('wp_enqueue_scripts', function () {
 
     $pricing_css = $base_dir . '/assets/css/pf-pricing.css';
     if (file_exists($pricing_css)) {
-        $version = wp_get_environment_type() === 'production' 
+        $version = (function_exists('wp_get_environment_type') && wp_get_environment_type() === 'production') 
             ? wp_get_theme()->get('Version') 
             : filemtime($pricing_css);
         wp_enqueue_style('pf-pricing-css', $base_uri . '/assets/css/pf-pricing.css', ['pf-core'], $version);
@@ -408,7 +408,7 @@ add_action('wp_enqueue_scripts', function () {
 
     $pricing_js = $base_dir . '/assets/js/pf-pricing.js';
     if (file_exists($pricing_js)) {
-        $version = wp_get_environment_type() === 'production' 
+        $version = (function_exists('wp_get_environment_type') && wp_get_environment_type() === 'production') 
             ? wp_get_theme()->get('Version') 
             : filemtime($pricing_js);
         wp_enqueue_script('pf-pricing-js', $base_uri . '/assets/js/pf-pricing.js', [], $version, true);

@@ -605,6 +605,7 @@ $show_legend = !empty($PF_FLAGS['mode_legend']) || !empty($PF_FLAGS['gating']);
                     class="pf-prompt"
                     data-prompt-template
                     data-base="<?php echo esc_attr($enhanced_prompt); ?>"
+                    data-original-base="<?php echo esc_attr($prompt); ?>"
                     rows="8"
                     spellcheck="false"><?php echo esc_html($enhanced_prompt); ?></textarea>
 

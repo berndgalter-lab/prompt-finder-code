@@ -1,13 +1,23 @@
-/* ===================================================================
-   Prompt Finder – Pricing (clean modern SaaS)
+/* =========================================================
+   PF Pricing - Modern SaaS Pricing Page
    Scope: .pf-pricing
-   =================================================================== */
+   Optimized for performance and maintainability
+   ========================================================= */
 
-/* --- Safety / Resets inside section --- */
+/* ========== Safety Resets ========== */
 .entry-content .pf-pricing,
-.entry-content .pf-pricing * { box-sizing: border-box; }
-.pf-pricing h1, .pf-pricing h2, .pf-pricing h3,
-.pf-pricing p, .pf-pricing ul, .pf-pricing li { margin:0; }
+.entry-content .pf-pricing * {
+  box-sizing: border-box;
+}
+
+.pf-pricing h1,
+.pf-pricing h2,
+.pf-pricing h3,
+.pf-pricing p,
+.pf-pricing ul,
+.pf-pricing li {
+  margin: 0;
+}
 
 /* --- Tokens (fallbacks if core not loaded) --- */
 .pf-pricing{

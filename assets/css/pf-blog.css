@@ -1,24 +1,81 @@
-/* ==== PF Blog (Typo & Media) ==== */
-.entry-content{ color:var(--pf-text); line-height:1.7; }
-.entry-content h1, .entry-content h2, .entry-content h3{
-  letter-spacing:-0.01em; line-height:1.2; margin:1.2em 0 .5em;
+/* =========================================================
+   PF Blog - Typography & Media Styles
+   Optimized for readability and performance
+   ========================================================= */
+
+/* ========== Base Typography ========== */
+.entry-content {
+  color: var(--pf-text);
+  line-height: 1.7;
 }
-.entry-content h1{ font-size:clamp(1.8rem, 4.5vw, 2.4rem); }
-.entry-content h2{ font-size:clamp(1.4rem, 3.2vw, 1.9rem); }
-.entry-content h3{ font-size:clamp(1.15rem, 2.6vw, 1.4rem); }
-.entry-content p{ margin:0 0 1em; }
-.entry-content a{ color:var(--pf-accent); text-decoration:underline; text-underline-offset:2px; }
-.entry-content img, .entry-content figure img{
-  border-radius:12px; border:1px solid var(--pf-border); display:block; max-width:100%; height:auto;
+
+.entry-content h1,
+.entry-content h2,
+.entry-content h3 {
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin: 1.2em 0 0.5em;
 }
-.entry-content figcaption{ color:var(--pf-text-dim); font-size:.9rem; text-align:center; margin-top:.35rem; }
-.entry-content blockquote{
-  margin:1.2em 0; padding:1rem 1.2rem; border-radius:12px;
-  background:linear-gradient(180deg,#0e121a,#0b0f16); border:1px solid var(--pf-border);
-  color:var(--pf-text);
+
+.entry-content h1 {
+  font-size: clamp(1.8rem, 4.5vw, 2.4rem);
 }
-.entry-content pre, .entry-content code{
-  background:#0a0f15; color:var(--pf-text);
-  border:1px solid #202636; border-radius:10px; padding:.2rem .4rem;
+
+.entry-content h2 {
+  font-size: clamp(1.4rem, 3.2vw, 1.9rem);
 }
-.entry-content pre{ padding:.8rem; overflow:auto; }
+
+.entry-content h3 {
+  font-size: clamp(1.15rem, 2.6vw, 1.4rem);
+}
+
+.entry-content p {
+  margin: 0 0 1em;
+}
+
+.entry-content a {
+  color: var(--pf-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ========== Media Elements ========== */
+.entry-content img,
+.entry-content figure img {
+  border-radius: 12px;
+  border: 1px solid var(--pf-border);
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.entry-content figcaption {
+  color: var(--pf-text-dim);
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 0.35rem;
+}
+
+/* ========== Special Elements ========== */
+.entry-content blockquote {
+  margin: 1.2em 0;
+  padding: 1rem 1.2rem;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #0e121a, #0b0f16);
+  border: 1px solid var(--pf-border);
+  color: var(--pf-text);
+}
+
+.entry-content pre,
+.entry-content code {
+  background: #0a0f15;
+  color: var(--pf-text);
+  border: 1px solid #202636;
+  border-radius: 10px;
+  padding: 0.2rem 0.4rem;
+}
+
+.entry-content pre {
+  padding: 0.8rem;
+  overflow: auto;
+}

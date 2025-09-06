@@ -1,51 +1,81 @@
-/* ==== PF Core (shared) ==== */
+/* =========================================================
+   PF Core - Shared Styles & Design Tokens
+   Optimized for performance and maintainability
+   ========================================================= */
 
-/* Layout-Primitives */
-.pf-wrap{ max-width:var(--pf-wrap); margin:0 auto; padding:0 1.25rem; }
-.pf-section{ padding:var(--pf-space) 0; border-top:1px solid var(--pf-border); }
-.pf-section:first-of-type{ border-top:none; }
-
-/* Typo-Basics */
-.pf-sub{ color:var(--pf-text-dim); line-height:1.6; }
-
-/* -----------------------------
-   Buttons (robust gegen Theme)
-   -----------------------------*/
-.pf-btn{
-  display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
-  padding:.85rem 1.1rem; border-radius:12px; border:1px solid var(--pf-border);
-  font-weight:600; text-decoration:none; transition:.18s ease;
-  line-height:1; cursor:pointer;
+/* ========== Layout Primitives ========== */
+.pf-wrap { 
+  max-width: var(--pf-wrap); 
+  margin: 0 auto; 
+  padding: 0 1.25rem; 
 }
-a.pf-btn, a.pf-btn:visited{ text-decoration:none !important; }
 
-/* Primary */
-.pf-btn--primary{
-  background:linear-gradient(180deg,#58e0ff, #5db9ff 35%, var(--pf-accent-2));
-  color:#081119; border-color:transparent;
-  box-shadow:0 8px 22px rgba(93,185,255,.25), 0 2px 0 rgba(8,17,25,.35) inset;
+.pf-section { 
+  padding: var(--pf-space) 0; 
+  border-top: 1px solid var(--pf-border); 
 }
+
+.pf-section:first-of-type { 
+  border-top: none; 
+}
+
+/* ========== Typography ========== */
+.pf-sub { 
+  color: var(--pf-text-dim); 
+  line-height: 1.6; 
+}
+
+/* ========== Button System ========== */
+.pf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.1rem;
+  border-radius: 12px;
+  border: 1px solid var(--pf-border);
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.18s ease;
+  line-height: 1;
+  cursor: pointer;
+}
+
+a.pf-btn,
+a.pf-btn:visited {
+  text-decoration: none !important;
+}
+
+/* Primary Button */
+.pf-btn--primary {
+  background: linear-gradient(180deg, #58e0ff, #5db9ff 35%, var(--pf-accent-2));
+  color: #081119;
+  border-color: transparent;
+  box-shadow: 0 8px 22px rgba(93, 185, 255, 0.25), 0 2px 0 rgba(8, 17, 25, 0.35) inset;
+}
+
 .pf-btn--primary:hover,
 .pf-btn--primary:focus,
-.pf-btn--primary:focus-visible{
+.pf-btn--primary:focus-visible {
   transform: translateY(-1px) scale(1.01);
-  color:#081119;
-  outline:none;
+  color: #081119;
+  outline: none;
 }
 
-/* Ghost – KONTRASTSICHER (auch bei Theme-Overrides) */
-.pf-btn--ghost{
-  background:transparent;
-  color:var(--pf-text);
-  border-color:var(--pf-border);
+/* Ghost Button */
+.pf-btn--ghost {
+  background: transparent;
+  color: var(--pf-text);
+  border-color: var(--pf-border);
 }
+
 .pf-btn--ghost:hover,
 .pf-btn--ghost:focus,
-.pf-btn--ghost:focus-visible{
-  background:#0e1119;               /* dunkles Overlay */
-  color:var(--pf-text);              /* Text hell */
-  border-color:#2a3140;
-  outline:none;
+.pf-btn--ghost:focus-visible {
+  background: #0e1119;
+  color: var(--pf-text);
+  border-color: #2a3140;
+  outline: none;
 }
 
 /* Härtere Absicherung gegen Theme-Regeln (GeneratePress, Gutenberg in .entry-content / .inside-article) */

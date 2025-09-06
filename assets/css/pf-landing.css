@@ -1,15 +1,33 @@
-/* ==== PF Landing (Home only) ==== */
+/* =========================================================
+   PF Landing - Homepage Styles
+   Optimized for performance and maintainability
+   ========================================================= */
 
-/* Hero */
-.pf-hero{
-  position:relative; overflow:hidden; padding:92px 0 72px;
+/* ========== Hero Section ========== */
+.pf-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 92px 0 72px;
   background:
-    radial-gradient(1000px 400px at 20% -10%, rgba(110,231,255,.12), transparent 60%),
-    radial-gradient(800px 300px at 80% 0%, rgba(139,92,246,.15), transparent 60%);
-  border-bottom:1px solid var(--pf-border); color:var(--pf-text);
+    radial-gradient(1000px 400px at 20% -10%, rgba(110, 231, 255, 0.12), transparent 60%),
+    radial-gradient(800px 300px at 80% 0%, rgba(139, 92, 246, 0.15), transparent 60%);
+  border-bottom: 1px solid var(--pf-border);
+  color: var(--pf-text);
 }
-.pf-hero .pf-wrap{ display:grid; gap:36px; grid-template-columns: 1.1fr 1fr; align-items:center; }
-@media (max-width: 900px){ .pf-hero .pf-wrap{ grid-template-columns:1fr; padding-top:24px; } }
+
+.pf-hero .pf-wrap {
+  display: grid;
+  gap: 36px;
+  grid-template-columns: 1.1fr 1fr;
+  align-items: center;
+}
+
+@media (max-width: 900px) {
+  .pf-hero .pf-wrap {
+    grid-template-columns: 1fr;
+    padding-top: 24px;
+  }
+}
 
 .pf-hero h1{
   font-size: clamp(2.2rem, 6vw, 3.5rem); line-height:1.08; letter-spacing:-0.02em; margin:0 0 16px;

@@ -4,9 +4,13 @@
  */
 
 console.log('PF Simple loaded!');
+console.log('PF Simple: Script is running immediately!');
 
 // Global variable store
 const PF_VARS = {};
+
+// IMMEDIATE TEST - does this script even load?
+console.log('PF Simple: Script loaded successfully - DOM ready check starting...');
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {

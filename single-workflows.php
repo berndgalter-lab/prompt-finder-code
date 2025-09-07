@@ -770,33 +770,109 @@ $show_legend = !empty($PF_FLAGS['mode_legend']) || !empty($PF_FLAGS['gating']);
   <?php endif; ?>
 </div>
 
-<!-- FORCE LOAD ASSETS DIRECTLY IN BODY (BYPASS ALL WORDPRESS SYSTEMS) -->
-<?php 
-$child_theme_uri = get_stylesheet_directory_uri();
-$child_theme_dir = get_stylesheet_directory();
+<!-- SIMPLE SOLUTION: Inline JavaScript that just works -->
+<script>
+console.log('PF Inline loaded!');
 
-// DEBUG: Log the paths
-error_log('[PF DEBUG] Child theme URI: ' . $child_theme_uri);
-error_log('[PF DEBUG] Child theme DIR: ' . $child_theme_dir);
-error_log('[PF DEBUG] JS file path: ' . $child_theme_dir . '/assets/js/pf-workflows.js');
-error_log('[PF DEBUG] JS file exists: ' . (file_exists($child_theme_dir . '/assets/js/pf-workflows.js') ? 'YES' : 'NO'));
-?>
+// Global variable store
+const PF_VARS = {};
 
-<!-- Force load CSS directly -->
-<?php if (file_exists($child_theme_dir . '/assets/css/pf-core.css')): ?>
-<link rel="stylesheet" href="<?php echo $child_theme_uri; ?>/assets/css/pf-core.css?v=<?php echo filemtime($child_theme_dir . '/assets/css/pf-core.css'); ?>" id="pf-core-body">
-<?php endif; ?>
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('PF Inline: DOM ready');
+    
+    // Find all variable inputs
+    const variableInputs = document.querySelectorAll('input[data-var-name]');
+    console.log('PF Inline: Found', variableInputs.length, 'variable inputs');
+    
+    // Add event listeners to all variable inputs
+    variableInputs.forEach(function(input) {
+        const varName = input.getAttribute('data-var-name');
+        console.log('PF Inline: Setting up input for variable:', varName);
+        
+        // Store initial value
+        if (input.value) {
+            PF_VARS[varName] = input.value;
+        }
+        
+        // Add input event listener
+        input.addEventListener('input', function() {
+            console.log('PF Inline: Variable changed:', varName, '=', input.value);
+            PF_VARS[varName] = input.value;
+            updateAllPrompts();
+        });
+        
+        // Add change event listener
+        input.addEventListener('change', function() {
+            console.log('PF Inline: Variable changed (change):', varName, '=', input.value);
+            PF_VARS[varName] = input.value;
+            updateAllPrompts();
+        });
+    });
+    
+    // Initial update
+    updateAllPrompts();
+});
 
-<?php if (file_exists($child_theme_dir . '/assets/css/pf-workflows.css')): ?>
-<link rel="stylesheet" href="<?php echo $child_theme_uri; ?>/assets/css/pf-workflows.css?v=<?php echo filemtime($child_theme_dir . '/assets/css/pf-workflows.css'); ?>" id="pf-workflows-body">
-<?php endif; ?>
+function updateAllPrompts() {
+    console.log('PF Inline: Updating all prompts with vars:', PF_VARS);
+    
+    // Find all prompt textareas
+    const promptTextareas = document.querySelectorAll('textarea[data-prompt-template]');
+    console.log('PF Inline: Found', promptTextareas.length, 'prompt textareas');
+    
+    promptTextareas.forEach(function(textarea) {
+        const baseTemplate = textarea.getAttribute('data-base');
+        if (!baseTemplate) {
+            console.log('PF Inline: No data-base found for textarea');
+            return;
+        }
+        
+        console.log('PF Inline: Updating prompt with template:', baseTemplate);
+        
+        // Replace variables in template
+        let updatedPrompt = baseTemplate;
+        
+        // Find all {variable} patterns
+        const variablePattern = /\{([^}]+)\}/g;
+        let match;
+        
+        while ((match = variablePattern.exec(baseTemplate)) !== null) {
+            const varName = match[1];
+            const varValue = PF_VARS[varName] || '';
+            console.log('PF Inline: Replacing', varName, 'with', varValue);
+            updatedPrompt = updatedPrompt.replace('{' + varName + '}', varValue);
+        }
+        
+        // Update textarea value
+        textarea.value = updatedPrompt;
+        console.log('PF Inline: Updated prompt:', updatedPrompt);
+    });
+}
 
-<!-- Force load JavaScript directly -->
-<?php if (file_exists($child_theme_dir . '/assets/js/pf-workflows.js')): ?>
-<script id="pf-workflows-body" src="<?php echo $child_theme_uri; ?>/assets/js/pf-workflows.js?v=<?php echo filemtime($child_theme_dir . '/assets/js/pf-workflows.js'); ?>"></script>
-<?php else: ?>
-<!-- DEBUG: JS file not found -->
-<script>console.error('[PF DEBUG] JavaScript file not found!');</script>
-<?php endif; ?>
+// Copy to clipboard function
+function copyToClipboard(textarea) {
+    textarea.select();
+    document.execCommand('copy');
+    
+    // Show feedback
+    const button = textarea.nextElementSibling;
+    if (button && button.classList.contains('pf-copy-btn')) {
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        button.style.backgroundColor = '#28a745';
+        
+        setTimeout(function() {
+            button.textContent = originalText;
+            button.style.backgroundColor = '';
+        }, 2000);
+    }
+}
+
+// Make copyToClipboard globally available
+window.copyToClipboard = copyToClipboard;
+
+console.log('PF Inline: Script loaded successfully');
+</script>
 
 <?php get_footer(); ?>

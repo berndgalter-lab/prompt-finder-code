@@ -781,9 +781,22 @@ const PF_VARS = {};
 document.addEventListener('DOMContentLoaded', function() {
     console.log('PF Inline: DOM ready');
     
+    // DEBUG: Find ALL inputs
+    const allInputs = document.querySelectorAll('input');
+    console.log('PF Inline: Found', allInputs.length, 'total inputs');
+    allInputs.forEach(function(input, index) {
+        console.log(`PF Inline: Input ${index}:`, {
+            type: input.type,
+            name: input.name,
+            id: input.id,
+            dataVarName: input.getAttribute('data-var-name'),
+            element: input
+        });
+    });
+    
     // Find all variable inputs
     const variableInputs = document.querySelectorAll('input[data-var-name]');
-    console.log('PF Inline: Found', variableInputs.length, 'variable inputs');
+    console.log('PF Inline: Found', variableInputs.length, 'variable inputs with data-var-name');
     
     // Add event listeners to all variable inputs
     variableInputs.forEach(function(input) {

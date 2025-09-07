@@ -746,6 +746,31 @@ add_action('wp_enqueue_scripts', function(){
   }
 }, 111);
 
+/* =====================================================
+   Integrated Core Functions (from pf-core.php)
+===================================================== */
+
+/**
+ * Frontend enhancements (replaces pf-core.php plugin functionality)
+ */
+add_action('wp_enqueue_scripts', function() {
+    try {
+        // Add custom CSS for admin users
+        if (is_user_logged_in() && current_user_can('manage_options')) {
+            wp_add_inline_style('pf-core', '
+                .pf-debug { 
+                    border: 1px dashed #0073aa; 
+                    background: #f0f8ff; 
+                    padding: 10px; 
+                    margin: 10px 0; 
+                }
+            ');
+        }
+    } catch (Exception $e) {
+        error_log('[PF Theme] Frontend enhancements error: ' . $e->getMessage());
+    }
+}, 112);
+
 /* Helper: darf dieser User favorisieren? */
 function pf_user_can_favorite(): bool {
   if ( ! is_user_logged_in() ) return false;

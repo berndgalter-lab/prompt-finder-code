@@ -121,7 +121,7 @@
       $$('input[data-var-name]', root).forEach((inp) => {
         const k = normKey(inp.getAttribute('data-var-name'));
         if (!k) return;
-        if (!inp.value && VARS[k] != null) {
+        if (VARS[k] != null && VARS[k] !== inp.value) {
           inp.value = VARS[k];
           inp.dispatchEvent(new Event('input', { bubbles: true }));
         }
@@ -139,17 +139,23 @@
   function renderPrompts(container = document) {
     try {
       const re = /\{([^}]+)\}/g;
-      $$('[data-prompt-template]', container).forEach((ta) => {
+      const prompts = $$('[data-prompt-template]', container);
+      console.log('[PF] Rendering', prompts.length, 'prompts');
+      
+      prompts.forEach((ta, index) => {
         const base = ta.getAttribute('data-base') || '';
+        console.log('[PF] Prompt', index, 'base:', base.substring(0, 100) + '...');
         
         // Simple approach: just replace variables in the current base template
         const out = base.replace(re, (m, key) => {
           const k = normKey(key);
           const val = Object.prototype.hasOwnProperty.call(VARS, k) ? VARS[k] : '';
+          console.log('[PF] Replacing', m, 'with', val || '(empty)');
           return val ? val : m;
         });
         
         ta.value = out;
+        console.log('[PF] Prompt', index, 'rendered:', out.substring(0, 100) + '...');
       });
     } catch (e) {
       logError('renderPrompts', e);
@@ -514,6 +520,8 @@ function initFillExamples() {
 
         // Update store immediately
         VARS[key] = inp.value;
+        console.log('[PF] Variable updated:', key, '=', inp.value);
+        console.log('[PF] Current VARS:', VARS);
 
         // Re-render ALL prompts so later steps update in real time
         renderPrompts(document);

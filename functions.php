@@ -336,6 +336,11 @@ add_action('wp_enqueue_scripts', function () {
                 ? wp_get_theme()->get('Version') 
                 : filemtime($js);
             wp_enqueue_script('pf-workflows-js', $uri . '/assets/js/pf-workflows.js', [], $js_version, true);
+            
+            // DEBUG: Log the actual URL being used
+            error_log('PF DEBUG: Enqueuing JS from: ' . $uri . '/assets/js/pf-workflows.js');
+            error_log('PF DEBUG: get_stylesheet_directory_uri() = ' . get_stylesheet_directory_uri());
+            error_log('PF DEBUG: get_template_directory_uri() = ' . get_template_directory_uri());
 
             // Bereits vorhanden: AJAX-Infos für Ratings
             wp_localize_script('pf-workflows-js', 'PF_WORKFLOWS', [

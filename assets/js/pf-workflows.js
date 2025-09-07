@@ -140,24 +140,16 @@
     try {
       const re = /\{([^}]+)\}/g;
       $$('[data-prompt-template]', container).forEach((ta) => {
-        // Use enhanced base (with context) if available, otherwise use original base
         const base = ta.getAttribute('data-base') || '';
-        const originalBase = ta.getAttribute('data-original-base') || base;
         
-        // First render the original template with variables
-        let rendered = originalBase.replace(re, (m, key) => {
+        // Simple approach: just replace variables in the current base template
+        const out = base.replace(re, (m, key) => {
           const k = normKey(key);
           const val = Object.prototype.hasOwnProperty.call(VARS, k) ? VARS[k] : '';
           return val ? val : m;
         });
         
-        // If we have context injection, append it
-        if (base !== originalBase) {
-          const contextPart = base.replace(originalBase, '');
-          rendered = rendered + contextPart;
-        }
-        
-        ta.value = rendered;
+        ta.value = out;
       });
     } catch (e) {
       logError('renderPrompts', e);
@@ -771,6 +763,105 @@ function initFillExamples() {
     }
   }
 
+
+  // ------------------------------
+  // Favorites System
+  // ------------------------------
+
+  /**
+   * Initialize favorites functionality
+   */
+  function initFavorites() {
+    try {
+      on(document, 'click', async (e) => {
+        const btn = e.target.closest('.pf-fav-btn');
+        if (!btn) return;
+
+        e.preventDefault();
+
+        const postId = btn.getAttribute('data-post-id');
+        if (!postId) return;
+
+        // Check if user is logged in
+        if (typeof PF_FAVS !== 'undefined' && !PF_FAVS.logged_in) {
+          alert(PF_FAVS.txt_login || 'Please log in to save favorites');
+          return;
+        }
+
+        // Show loading state
+        btn.classList.add(CONFIG.CLASSES.BUSY);
+        const originalText = btn.querySelector('.pf-fav-label').textContent;
+
+        try {
+          const formData = new FormData();
+          formData.append('action', 'pf_toggle_favorite');
+          formData.append('post_id', postId);
+          formData.append('nonce', (typeof PF_FAVS !== 'undefined' && PF_FAVS.nonce) ? PF_FAVS.nonce : '');
+
+          const ajaxUrl = (typeof PF_FAVS !== 'undefined' && PF_FAVS.ajax_url) ? 
+                         PF_FAVS.ajax_url : '/wp-admin/admin-ajax.php';
+
+          const response = await fetch(ajaxUrl, {
+            method: 'POST',
+            credentials: 'same-origin',
+            body: formData
+          });
+
+          const json = await response.json();
+
+          if (json && json.success) {
+            const isAdded = json.data.added;
+            btn.classList.toggle(CONFIG.CLASSES.ON, isAdded);
+            btn.setAttribute('aria-pressed', isAdded ? 'true' : 'false');
+            btn.querySelector('.pf-fav-label').textContent = isAdded ? 'Saved' : 'Save';
+          } else {
+            throw new Error(json.data?.message || 'Unknown error');
+          }
+        } catch (error) {
+          logError('favorites toggle', error);
+          btn.querySelector('.pf-fav-label').textContent = originalText;
+        } finally {
+          btn.classList.remove(CONFIG.CLASSES.BUSY);
+        }
+      });
+    } catch (e) {
+      logError('initFavorites', e);
+    }
+  }
+
+  // ------------------------------
+  // Gating System
+  // ------------------------------
+
+  /**
+   * Initialize gating functionality
+   */
+  function initGating() {
+    try {
+      // Handle locked step interactions
+      on(document, 'click', (e) => {
+        const lockedStep = e.target.closest('.pf-step--locked');
+        if (!lockedStep) return;
+
+        // Prevent interactions with locked content
+        const target = e.target;
+        if (target.closest('.pf-step-cta')) return; // Allow CTA buttons
+
+        e.preventDefault();
+        e.stopPropagation();
+      });
+
+      // Handle focus on locked inputs
+      on(document, 'focus', (e) => {
+        const input = e.target.closest('.pf-step--locked input, .pf-step--locked textarea');
+        if (input) {
+          input.blur();
+        }
+      }, true);
+    } catch (e) {
+      logError('initGating', e);
+    }
+  }
 
   // ------------------------------
   // Main Initialization

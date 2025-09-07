@@ -511,12 +511,23 @@ function initFillExamples() {
    */
   function initLiveVars() {
     try {
+      console.log('[PF] Initializing live variables...');
+      const inputs = $$('input[data-var-name]');
+      console.log('[PF] Found', inputs.length, 'variable inputs');
+      
       on(document, 'input', (e) => {
+        console.log('[PF] Input event on:', e.target);
         const inp = e.target.closest('input[data-var-name]');
-        if (!inp) return;
+        if (!inp) {
+          console.log('[PF] Not a variable input, ignoring');
+          return;
+        }
         
         const key = normKey(inp.getAttribute('data-var-name'));
-        if (!key) return;
+        if (!key) {
+          console.log('[PF] No valid key found');
+          return;
+        }
 
         // Update store immediately
         VARS[key] = inp.value;
@@ -782,6 +793,9 @@ function initFillExamples() {
    */
   function init() {
     try {
+      console.log('[PF] Initializing workflows...');
+      console.log('[PF] VARS store:', VARS);
+      
       // On load: fill any empty inputs from store, then full refresh
       fillInputsFromStore(document);
       refresh(document);

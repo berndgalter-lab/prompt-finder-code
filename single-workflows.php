@@ -559,17 +559,15 @@ $show_legend = !empty($PF_FLAGS['mode_legend']) || !empty($PF_FLAGS['gating']);
 
               <?php foreach ($vars as $v):
                 $name     = trim($v['var_name'] ?? '');
-                $label    = trim($v['var_label'] ?? '');
                 $desc     = trim($v['var_description'] ?? '');
                 $exampleV = trim($v['example_value'] ?? '');
                 $required = !empty($v['required'] ?? $v['var_required'] ?? false);
 
-                if (!$label && $name) {
-                  $label = ucwords(str_replace(['_','-'], ' ', $name));
-                }
+                // Create label from variable name since var_label doesn't exist in ACF
+                $label = $name ? ucwords(str_replace(['_','-'], ' ', $name)) : 'Variable';
                 
                 // Use example value as placeholder if available, otherwise use a generic placeholder
-                $placeholder = $exampleV ?: 'Enter ' . strtolower($label ?: 'value');
+                $placeholder = $exampleV ?: 'Enter ' . strtolower($label);
               ?>
                 <label class="pf-var <?php echo $required ? 'is-required' : ''; ?>">
                   <span class="pf-var-label">

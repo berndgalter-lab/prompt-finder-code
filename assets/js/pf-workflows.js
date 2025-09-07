@@ -121,7 +121,8 @@
       $$('input[data-var-name]', root).forEach((inp) => {
         const k = normKey(inp.getAttribute('data-var-name'));
         if (!k) return;
-        if (!inp.value && VARS[k] != null) {
+        // Always update if store value differs from current input value
+        if (VARS[k] != null && inp.value !== VARS[k]) {
           inp.value = VARS[k];
           inp.dispatchEvent(new Event('input', { bubbles: true }));
         }
@@ -138,24 +139,17 @@
    */
   function renderPrompts(container = document) {
     try {
-      console.log('[PF] renderPrompts called');
       const re = /\{([^}]+)\}/g;
-      const prompts = $$('[data-prompt-template]', container);
-      console.log('[PF] Found', prompts.length, 'prompt templates');
-      
-      prompts.forEach((ta, index) => {
+      $$('[data-prompt-template]', container).forEach((ta) => {
         const base = ta.getAttribute('data-base') || '';
-        console.log('[PF] Prompt', index, 'base:', base.substring(0, 100) + '...');
         
         // Simple approach: just replace variables in the current base template
         const out = base.replace(re, (m, key) => {
           const k = normKey(key);
           const val = Object.prototype.hasOwnProperty.call(VARS, k) ? VARS[k] : '';
-          console.log('[PF] Replacing', m, 'with', val || '(empty)');
           return val ? val : m;
         });
         
-        console.log('[PF] Prompt', index, 'rendered:', out.substring(0, 100) + '...');
         ta.value = out;
       });
     } catch (e) {
@@ -512,31 +506,17 @@ function initFillExamples() {
    */
   function initLiveVars() {
     try {
-      console.log('[PF] Initializing live variables...');
-      const inputs = $$('input[data-var-name]');
-      console.log('[PF] Found', inputs.length, 'variable inputs');
-      
       on(document, 'input', (e) => {
-        console.log('[PF] Input event detected on:', e.target);
         const inp = e.target.closest('input[data-var-name]');
-        if (!inp) {
-          console.log('[PF] Not a variable input, ignoring');
-          return;
-        }
+        if (!inp) return;
         
         const key = normKey(inp.getAttribute('data-var-name'));
-        if (!key) {
-          console.log('[PF] No valid key found');
-          return;
-        }
+        if (!key) return;
 
-        console.log('[PF] Updating variable:', key, '=', inp.value);
         // Update store immediately
         VARS[key] = inp.value;
-        console.log('[PF] VARS store:', VARS);
 
         // Re-render ALL prompts so later steps update in real time
-        console.log('[PF] Re-rendering prompts...');
         renderPrompts(document);
       });
     } catch (e) {

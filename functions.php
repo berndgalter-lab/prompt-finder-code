@@ -771,6 +771,51 @@ add_action('wp_enqueue_scripts', function() {
     }
 }, 112);
 
+/* =====================================================
+   FORCE CORRECT ASSET URLS (Debug/Fix for Parent Theme Override)
+===================================================== */
+
+/**
+ * Force correct asset URLs - override any parent theme interference
+ */
+add_action('wp_enqueue_scripts', function() {
+    // Force deregister any conflicting scripts/styles from parent theme
+    wp_deregister_script('pf-workflows-js');
+    wp_deregister_style('pf-core');
+    
+    // Re-register with correct child theme URLs
+    $child_uri = get_stylesheet_directory_uri();
+    $child_dir = get_stylesheet_directory();
+    
+    // Force re-enqueue pf-core with child theme URL
+    $core_css = $child_dir . '/assets/css/pf-core.css';
+    if (file_exists($core_css)) {
+        $version = filemtime($core_css);
+        wp_enqueue_style('pf-core-child', $child_uri . '/assets/css/pf-core.css', [], $version);
+        error_log('[PF FORCE] Enqueuing pf-core from: ' . $child_uri . '/assets/css/pf-core.css');
+    }
+    
+    // Force re-enqueue workflows JS with child theme URL (only on workflow pages)
+    if (is_singular('workflows') || is_post_type_archive('workflows') || is_tax(['workflow_category','workflow_tag'])) {
+        $js_file = $child_dir . '/assets/js/pf-workflows.js';
+        if (file_exists($js_file)) {
+            $version = filemtime($js_file);
+            wp_enqueue_script('pf-workflows-js-child', $child_uri . '/assets/js/pf-workflows.js', [], $version, true);
+            error_log('[PF FORCE] Enqueuing pf-workflows from: ' . $child_uri . '/assets/js/pf-workflows.js');
+            
+            // Re-add localization
+            wp_localize_script('pf-workflows-js-child', 'PF_WORKFLOWS', [
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce'    => wp_create_nonce('pf-rate-nonce'),
+            ]);
+            
+            $PF_CONFIG = pf_load_config();
+            wp_localize_script('pf-workflows-js-child', 'PF_CONFIG', $PF_CONFIG);
+            wp_localize_script('pf-workflows-js-child', 'PF_FLAGS', $PF_CONFIG['feature_flags'] ?? []);
+        }
+    }
+}, 999); // High priority to override parent theme
+
 /* Helper: darf dieser User favorisieren? */
 function pf_user_can_favorite(): bool {
   if ( ! is_user_logged_in() ) return false;

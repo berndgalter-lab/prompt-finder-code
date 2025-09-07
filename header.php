@@ -45,6 +45,22 @@ $home_url = esc_url( home_url( '/' ) );
     <link rel="preload" href="<?php echo get_stylesheet_directory_uri(); ?>/assets/js/pf-workflows.js" as="script">
     <?php endif; ?>
     
+    <!-- NUCLEAR OPTION: FORCE LOAD ASSETS DIRECTLY (BYPASS WORDPRESS ENQUQUE) -->
+    <?php 
+    $child_theme_uri = get_stylesheet_directory_uri();
+    $child_theme_dir = get_stylesheet_directory();
+    ?>
+    
+    <!-- Force load pf-core.css directly -->
+    <?php if (file_exists($child_theme_dir . '/assets/css/pf-core.css')): ?>
+    <link rel="stylesheet" href="<?php echo $child_theme_uri; ?>/assets/css/pf-core.css?v=<?php echo filemtime($child_theme_dir . '/assets/css/pf-core.css'); ?>" id="pf-core-direct">
+    <?php endif; ?>
+    
+    <!-- Force load pf-workflows.css on workflow pages -->
+    <?php if ((is_singular('workflows') || is_post_type_archive('workflows') || is_tax(['workflow_category','workflow_tag'])) && file_exists($child_theme_dir . '/assets/css/pf-workflows.css')): ?>
+    <link rel="stylesheet" href="<?php echo $child_theme_uri; ?>/assets/css/pf-workflows.css?v=<?php echo filemtime($child_theme_dir . '/assets/css/pf-workflows.css'); ?>" id="pf-workflows-css-direct">
+    <?php endif; ?>
+    
     <!-- DNS Prefetch for external resources -->
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
     <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">

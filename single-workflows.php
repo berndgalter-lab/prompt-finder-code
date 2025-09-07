@@ -774,6 +774,12 @@ $show_legend = !empty($PF_FLAGS['mode_legend']) || !empty($PF_FLAGS['gating']);
 <?php 
 $child_theme_uri = get_stylesheet_directory_uri();
 $child_theme_dir = get_stylesheet_directory();
+
+// DEBUG: Log the paths
+error_log('[PF DEBUG] Child theme URI: ' . $child_theme_uri);
+error_log('[PF DEBUG] Child theme DIR: ' . $child_theme_dir);
+error_log('[PF DEBUG] JS file path: ' . $child_theme_dir . '/assets/js/pf-workflows.js');
+error_log('[PF DEBUG] JS file exists: ' . (file_exists($child_theme_dir . '/assets/js/pf-workflows.js') ? 'YES' : 'NO'));
 ?>
 
 <!-- Force load CSS directly -->
@@ -788,6 +794,9 @@ $child_theme_dir = get_stylesheet_directory();
 <!-- Force load JavaScript directly -->
 <?php if (file_exists($child_theme_dir . '/assets/js/pf-workflows.js')): ?>
 <script id="pf-workflows-body" src="<?php echo $child_theme_uri; ?>/assets/js/pf-workflows.js?v=<?php echo filemtime($child_theme_dir . '/assets/js/pf-workflows.js'); ?>"></script>
+<?php else: ?>
+<!-- DEBUG: JS file not found -->
+<script>console.error('[PF DEBUG] JavaScript file not found!');</script>
 <?php endif; ?>
 
 <?php get_footer(); ?>

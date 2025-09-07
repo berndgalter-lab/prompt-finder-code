@@ -121,8 +121,7 @@
       $$('input[data-var-name]', root).forEach((inp) => {
         const k = normKey(inp.getAttribute('data-var-name'));
         if (!k) return;
-        // Always update if store value differs from current input value
-        if (VARS[k] != null && inp.value !== VARS[k]) {
+        if (!inp.value && VARS[k] != null) {
           inp.value = VARS[k];
           inp.dispatchEvent(new Event('input', { bubbles: true }));
         }
@@ -141,16 +140,24 @@
     try {
       const re = /\{([^}]+)\}/g;
       $$('[data-prompt-template]', container).forEach((ta) => {
+        // Use enhanced base (with context) if available, otherwise use original base
         const base = ta.getAttribute('data-base') || '';
+        const originalBase = ta.getAttribute('data-original-base') || base;
         
-        // Simple approach: just replace variables in the current base template
-        const out = base.replace(re, (m, key) => {
+        // First render the original template with variables
+        let rendered = originalBase.replace(re, (m, key) => {
           const k = normKey(key);
           const val = Object.prototype.hasOwnProperty.call(VARS, k) ? VARS[k] : '';
           return val ? val : m;
         });
         
-        ta.value = out;
+        // If we have context injection, append it
+        if (base !== originalBase) {
+          const contextPart = base.replace(originalBase, '');
+          rendered = rendered + contextPart;
+        }
+        
+        ta.value = rendered;
       });
     } catch (e) {
       logError('renderPrompts', e);

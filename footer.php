@@ -229,43 +229,6 @@ $current_year = date( 'Y' );
         </div>
     </footer>
 
-<!-- NUCLEAR OPTION: FORCE LOAD JAVASCRIPT DIRECTLY (BYPASS WORDPRESS ENQUEUE) -->
-<?php if (is_singular('workflows') || is_post_type_archive('workflows') || is_tax(['workflow_category','workflow_tag'])): ?>
-    <?php 
-    $child_theme_uri = get_stylesheet_directory_uri();
-    $child_theme_dir = get_stylesheet_directory();
-    ?>
-    
-    <!-- Force load pf-workflows.js directly -->
-    <?php if (file_exists($child_theme_dir . '/assets/js/pf-workflows.js')): ?>
-    <script id="pf-workflows-js-direct" src="<?php echo $child_theme_uri; ?>/assets/js/pf-workflows.js?v=<?php echo filemtime($child_theme_dir . '/assets/js/pf-workflows.js'); ?>"></script>
-    
-    <!-- Add required WordPress AJAX data -->
-    <script id="pf-workflows-data">
-    window.PF_WORKFLOWS = {
-        ajax_url: "<?php echo admin_url('admin-ajax.php'); ?>",
-        nonce: "<?php echo wp_create_nonce('pf-rate-nonce'); ?>"
-    };
-    
-    <?php 
-    $PF_CONFIG = function_exists('pf_load_config') ? pf_load_config() : [];
-    ?>
-    window.PF_CONFIG = <?php echo wp_json_encode($PF_CONFIG); ?>;
-    window.PF_FLAGS = <?php echo wp_json_encode($PF_CONFIG['feature_flags'] ?? []); ?>;
-    
-    window.PF_FAVS = {
-        ajax_url: "<?php echo admin_url('admin-ajax.php'); ?>",
-        nonce: "<?php echo wp_create_nonce('pf-fav-nonce'); ?>",
-        logged_in: <?php echo is_user_logged_in() ? 'true' : 'false'; ?>,
-        txt_added: "Saved to favorites",
-        txt_removed: "Removed from favorites",
-        txt_login: "Please log in to save favorites",
-        txt_denied: "Favorites are for paying users"
-    };
-    </script>
-    <?php endif; ?>
-<?php endif; ?>
-
 <?php wp_footer(); ?>
 </body>
 </html>

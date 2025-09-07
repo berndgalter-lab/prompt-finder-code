@@ -770,4 +770,24 @@ $show_legend = !empty($PF_FLAGS['mode_legend']) || !empty($PF_FLAGS['gating']);
   <?php endif; ?>
 </div>
 
+<!-- FORCE LOAD ASSETS DIRECTLY IN BODY (BYPASS ALL WORDPRESS SYSTEMS) -->
+<?php 
+$child_theme_uri = get_stylesheet_directory_uri();
+$child_theme_dir = get_stylesheet_directory();
+?>
+
+<!-- Force load CSS directly -->
+<?php if (file_exists($child_theme_dir . '/assets/css/pf-core.css')): ?>
+<link rel="stylesheet" href="<?php echo $child_theme_uri; ?>/assets/css/pf-core.css?v=<?php echo filemtime($child_theme_dir . '/assets/css/pf-core.css'); ?>" id="pf-core-body">
+<?php endif; ?>
+
+<?php if (file_exists($child_theme_dir . '/assets/css/pf-workflows.css')): ?>
+<link rel="stylesheet" href="<?php echo $child_theme_uri; ?>/assets/css/pf-workflows.css?v=<?php echo filemtime($child_theme_dir . '/assets/css/pf-workflows.css'); ?>" id="pf-workflows-body">
+<?php endif; ?>
+
+<!-- Force load JavaScript directly -->
+<?php if (file_exists($child_theme_dir . '/assets/js/pf-workflows.js')): ?>
+<script id="pf-workflows-body" src="<?php echo $child_theme_uri; ?>/assets/js/pf-workflows.js?v=<?php echo filemtime($child_theme_dir . '/assets/js/pf-workflows.js'); ?>"></script>
+<?php endif; ?>
+
 <?php get_footer(); ?>
